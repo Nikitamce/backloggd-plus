@@ -78,7 +78,9 @@ export const SITE_UI = {
       Backlogs: 'Бэклоги',
       Wishlist: 'Вишлист',
       Wishlists: 'Вишлисты',
-      'Manage lists': 'Управление списками',
+      // Short: long label made the lists button huge and shifted the heart
+      'Manage lists': 'Списки',
+      'Manage Lists': 'Списки',
       'Change cover': 'Сменить обложку',
       'Change Cover': 'Сменить обложку',
       Bundled: 'В бандлах',
@@ -175,7 +177,22 @@ export const SITE_UI = {
       Tactical: 'Тактика',
       MOBA: 'MOBA',
       'More info on IGDB': 'Подробнее на IGDB',
+      'More info on': 'Подробнее на',
+      'More info': 'Подробнее',
       'Based on': 'На основе',
+      'Profile Stats': 'Статистика профиля',
+      'Game Ratings': 'Оценки игр',
+      'Quick Log': 'Быстрая запись',
+      'Quick log': 'Быстрая запись',
+      'Recently trending': 'Сейчас в тренде',
+      'Popular reviews': 'Популярные рецензии',
+      'See More': 'Ещё',
+      'See more': 'Ещё',
+      'Submit feedback': 'Отправить отзыв',
+      reviewed: 'рецензия',
+      Reviewed: 'Рецензия',
+      'Completed on': 'Пройдено на',
+      Completed: 'Пройдено',
       members: 'участников',
       Member: 'Участник',
       Members: 'Участники',
@@ -354,14 +371,18 @@ export const SITE_UI = {
         re: /^(\d+(?:[.,]\d+)?)\s*h\s+to master$/i,
         replace: (_, n) => `${n} ч до мастерства`,
       },
-      // "Stats for all versions" + optional caret / whitespace variants
+      // "Stats for all versions" + optional caret / chevron variants
       {
-        re: /^Stats\s+for\s+all\s+versions\s*([▾▼˅▾]?)$/i,
-        replace: (_, caret) => `Статистика по всем версиям${caret ? ` ${caret}` : ''}`.trim(),
+        re: /^Stats\s+for\s+all\s+versions\s*([▾▼˅∨vVˆ^<>‹›]*)$/i,
+        replace: (m, caret) => `Статистика по всем версиям${caret ? ` ${caret}` : ''}`.trim(),
       },
       {
-        re: /^Stats\s+for\s+this\s+version\s*([▾▼˅]?)$/i,
-        replace: (_, caret) => `Статистика по этой версии${caret ? ` ${caret}` : ''}`.trim(),
+        re: /^Stats\s+for\s+this\s+version\s*([▾▼˅∨vVˆ^<>‹›]*)$/i,
+        replace: (m, caret) => `Статистика по этой версии${caret ? ` ${caret}` : ''}`.trim(),
+      },
+      {
+        re: /^Stats\s+for\s+all\s+versions/i,
+        replace: () => 'Статистика по всем версиям',
       },
       // "50K Plays" style sometimes split; full phrase if present
       {
@@ -408,7 +429,7 @@ export const SITE_UI = {
       // 0 Likes / 12 Likes
       {
         re: /^(\d+)\s+Likes?$/i,
-        replace: (_, n) => {
+        replace: (m, n) => {
           const k = Number(n);
           const word =
             k % 10 === 1 && k % 100 !== 11
@@ -419,7 +440,30 @@ export const SITE_UI = {
           return `${n} ${word}`;
         },
       },
-      // Marker: english dates are handled in site-translate via localizeEnglishDateText
+      // Completed on Windows PC
+      {
+        re: /^Completed on (.+)$/i,
+        replace: (m, platform) => `Пройдено на ${platform}`,
+      },
+      // Welcome back X, try shuffle...
+      {
+        re: /^Welcome back\s*(.*?),\s*try shuffle sort when you can't decide what to play!$/i,
+        replace: (m, mid) =>
+          `С возвращением${mid ? ` ${mid.trim()}` : ''}, попробуй shuffle sort, если не знаешь во что поиграть!`,
+      },
+      {
+        re: /^Welcome back\b/i,
+        replace: () => 'С возвращением',
+      },
+      {
+        re: /^try shuffle sort when you can't decide what to play!$/i,
+        replace: () => 'попробуй shuffle sort, если не знаешь во что поиграть!',
+      },
+      // "4 reviewed" style journal line prefix
+      {
+        re: /^(\d+)\s+reviewed\b/i,
+        replace: (m, n) => `${n} · рецензия`,
+      },
     ],
   },
 };

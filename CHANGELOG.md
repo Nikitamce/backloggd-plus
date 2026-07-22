@@ -5,6 +5,16 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.7.66] - 2026-07-19
+
+### Fixed (translator)
+
+- **Critical:** pattern replace passed RegExpMatchArray as one arg → `undefined лайков` (now spreads match groups)
+- Stats for all versions: element-level translation when text is split / has caret
+- Manage lists → short **Списки** (was wrapping and pushing the heart)
+- More strings: Log or review, More info on, journal Completed on…, home Welcome back / Profile Stats / Game Ratings / Quick Log, Recently trending, Popular reviews, See More
+- Auto-repair of leftover `undefined лайк…` in the DOM
+
 ## [0.7.65] - 2026-07-19
 
 ### Fixed / improved (translator)
