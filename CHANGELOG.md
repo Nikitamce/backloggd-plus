@@ -5,6 +5,14 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.7.68] - 2026-07-19
+
+### Fixed (translator)
+
+- Sidebar status labels no longer smash into one line (safe label targets only; no overflow:hidden)
+- Pink button: **Отметить** (was Запись)
+- Log editor strings: Review, Details, Create Log, spoilers, platform select, etc.
+
 ## [0.7.67] - 2026-07-19
 
 ### Fixed (translator)
