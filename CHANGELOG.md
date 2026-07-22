@@ -5,6 +5,16 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.7.65] - 2026-07-19
+
+### Fixed / improved (translator)
+
+- Edit button: shorter label **Изменить** (full «Редактировать» broke the pink sidebar button)
+- Log or review again, Bundled, Favorite Games, profile stats (Games Played / Played in YEAR / Games Backloggd)
+- Recently Played / Reviewed, Open review, EXPAND, N Likes
+- Pattern: `View my '…' stats →` → `Моя статистика по «…» →`
+- Steam Deck **Verified** → **Проверено** (RU Plus i18n)
+
 ## [0.7.64] - 2026-07-19
 
 ### Fixed / improved (translator)

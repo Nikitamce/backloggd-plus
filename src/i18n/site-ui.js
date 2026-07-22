@@ -39,7 +39,8 @@ export const SITE_UI = {
       Block: 'Заблокировать',
       Report: 'Пожаловаться',
       Share: 'Поделиться',
-      Edit: 'Редактировать',
+      // Short: pink sidebar button is narrow — "Редактировать" wraps/breaks
+      Edit: 'Изменить',
       Delete: 'Удалить',
       Cancel: 'Отмена',
       Save: 'Сохранить',
@@ -68,6 +69,9 @@ export const SITE_UI = {
 
       // —— Game page sidebar / actions ——
       'Log or review': 'Запись или рецензия',
+      'Log or review again': 'Записать снова',
+      'Log again': 'Записать снова',
+      'Review again': 'Рецензия снова',
       Played: 'Пройдено',
       Playing: 'Играю',
       Backlog: 'Бэклог',
@@ -77,6 +81,9 @@ export const SITE_UI = {
       'Manage lists': 'Управление списками',
       'Change cover': 'Сменить обложку',
       'Change Cover': 'Сменить обложку',
+      Bundled: 'В бандлах',
+      Bundle: 'Бандл',
+      Bundles: 'Бандлы',
       Like: 'Нравится',
       Likes: 'Лайки',
       Unlike: 'Убрать лайк',
@@ -90,6 +97,19 @@ export const SITE_UI = {
       'Personal Ratings': 'Личные оценки',
       'Earned Badges': 'Полученные значки',
       Badges: 'Значки',
+      'Favorite Games': 'Любимые игры',
+      'Favorite games': 'Любимые игры',
+      'Games Played': 'Игр пройдено',
+      'Games Backloggd': 'В бэклоге',
+      'Games Backlogged': 'В бэклоге',
+      'Recently Played': 'Недавно играл',
+      'Recently Reviewed': 'Недавние рецензии',
+      'Open review': 'Открыть рецензию',
+      'Open Review': 'Открыть рецензию',
+      EXPAND: 'РАЗВЕРНУТЬ',
+      Expand: 'Развернуть',
+      COLLAPSE: 'СВЕРНУТЬ',
+      Collapse: 'Свернуть',
       Comment: 'Комментарий',
       Comments: 'Комментарии',
       Replay: 'Реплей',
@@ -166,8 +186,6 @@ export const SITE_UI = {
       Updates: 'Обновления',
       Editions: 'Издания',
       'In Bundles': 'В бандлах',
-      Bundle: 'Бандл',
-      Bundles: 'Бандлы',
       Remaster: 'Ремастер',
       Remake: 'Ремейк',
       Port: 'Порт',
@@ -321,8 +339,6 @@ export const SITE_UI = {
       Unpin: 'Открепить',
       Hide: 'Скрыть',
       Show: 'Показать',
-      Expand: 'Развернуть',
-      Collapse: 'Свернуть',
     },
     patterns: [
       // "16h average" / "16 h average"
@@ -372,6 +388,36 @@ export const SITE_UI = {
       {
         re: /^Released (.+)$/i,
         replace: (_, d) => `Релиз ${d}`,
+      },
+      // View my 'Game Title' stats →
+      {
+        re: /^View my ['‘’"](.+?)['‘’"]\s*stats\s*([→›»]?)\s*$/i,
+        replace: (_, title, arrow) =>
+          `Моя статистика по «${title}»${arrow ? ` ${arrow}` : ''}`.trim(),
+      },
+      {
+        re: /^View my (.+?) stats\s*([→›»]?)\s*$/i,
+        replace: (_, title, arrow) =>
+          `Моя статистика по «${title.replace(/^['‘’"]|['‘’"]$/g, '')}»${arrow ? ` ${arrow}` : ''}`.trim(),
+      },
+      // Played in 2026
+      {
+        re: /^Played in (\d{4})$/i,
+        replace: (_, y) => `Сыграно в ${y}`,
+      },
+      // 0 Likes / 12 Likes
+      {
+        re: /^(\d+)\s+Likes?$/i,
+        replace: (_, n) => {
+          const k = Number(n);
+          const word =
+            k % 10 === 1 && k % 100 !== 11
+              ? 'лайк'
+              : k % 10 >= 2 && k % 10 <= 4 && (k % 100 < 10 || k % 100 >= 20)
+                ? 'лайка'
+                : 'лайков';
+          return `${n} ${word}`;
+        },
       },
       // Marker: english dates are handled in site-translate via localizeEnglishDateText
     ],

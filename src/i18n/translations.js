@@ -477,7 +477,7 @@ export const TRANSLATIONS = {
     hltbExtra: 'Extra {n}ч',
     hltbComplete: 'Complete {n}ч',
     deckProton: 'Deck / Proton',
-    deckVerified: 'Verified',
+    deckVerified: 'Проверено',
     deckPlayable: 'Играбельно',
     deckUnsupported: 'Не поддерживается',
     deckUnknown: 'Неизвестно',

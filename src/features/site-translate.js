@@ -108,8 +108,8 @@ function walkText(root, pack) {
       if (isBlpManagedElement(parent)) return NodeFilter.FILTER_REJECT;
       const raw = node.nodeValue;
       if (!raw || !normalizeKey(raw)) return NodeFilter.FILTER_REJECT;
-      // Allow slightly longer for date phrases / stats labels
-      if (normalizeKey(raw).length > 120) return NodeFilter.FILTER_REJECT;
+      // Allow longer for "View my 'Long Game Title' stats →"
+      if (normalizeKey(raw).length > 160) return NodeFilter.FILTER_REJECT;
       return NodeFilter.FILTER_ACCEPT;
     },
   });
