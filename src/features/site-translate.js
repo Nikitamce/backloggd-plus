@@ -66,7 +66,17 @@ const BLP_SKIP_SEL = [
   `[${STEAMDB_ATTR}]`,
   `[${SIMILAR_ATTR}]`,
   `[${CARD_ATTR}]`,
+  '[data-blp-values]',
+  '[data-blp-card]',
+  '[data-blp-card-state]',
+  '.blp-price',
+  '.blp-price__was',
+  '.blp-price__now',
+  '.blp-price__stack',
+  '.blp-discount',
+  '.blp-discount-ends',
   '.blp-card-badges',
+  '.blp-card-badge',
   '.blp-settings-backdrop',
   '.blp-fix-match-backdrop',
   '.blp-export-backdrop',
@@ -79,6 +89,12 @@ const BLP_SKIP_SEL = [
   '.blp-toast-host',
   '.blp-toast',
   '.blp-unified',
+  '.blp-gs-chip',
+  '.blp-steam-categories',
+  '.blp-steam-tags',
+  '.blp-steam-line',
+  '.blp-owned-badge',
+  '.blp-wishlist-badge',
   '#blp-nav-settings',
   '#blp-toast-host',
   '[data-blp-debug]',
@@ -88,15 +104,36 @@ const SITE_T_ATTR = 'data-blp-site-t';
 
 let styleInjected = false;
 function ensureTranslateStyles() {
-  if (styleInjected || typeof document === 'undefined') return;
+  if (typeof document === 'undefined') return;
+  // Always refresh rules (older builds injected overflow:hidden that clipped UI)
+  const existing = document.getElementById('blp-site-translate-style');
+  if (existing) existing.remove();
   styleInjected = true;
   const s = document.createElement('style');
   s.id = 'blp-site-translate-style';
-  // Soft styles only — never overflow:hidden (it smashed sidebar status labels)
   s.textContent = `
+/* Site translator — never touch Plus price chrome */
 [${SITE_T_ATTR}] {
   letter-spacing: normal !important;
   word-spacing: 0.02em !important;
+}
+[data-blp-enrich] .blp-price,
+[data-blp-enrich] .blp-price:link,
+[data-blp-enrich] .blp-price:visited,
+[data-blp-enrich] .blp-price:hover {
+  text-decoration: none !important;
+}
+[data-blp-enrich] .blp-price__now {
+  text-decoration: none !important;
+  color: #beee11 !important;
+  font-weight: 700 !important;
+}
+[data-blp-enrich] .blp-price:not(.blp-price--sale) {
+  text-decoration: none !important;
+  font-weight: 700;
+}
+[data-blp-enrich] .blp-price__was {
+  text-decoration: line-through !important;
 }
 `;
   document.documentElement.appendChild(s);
@@ -104,8 +141,25 @@ function ensureTranslateStyles() {
 
 function isBlpManagedElement(el) {
   if (!el || el.nodeType !== 1) return false;
+  if (typeof el.className === 'string' && /\bblp-/.test(el.className)) return true;
   if (el.matches?.(BLP_SKIP_SEL)) return true;
-  return Boolean(el.closest?.(BLP_SKIP_SEL));
+  if (el.closest?.(BLP_SKIP_SEL)) return true;
+  // Any Plus data-* marker in ancestors
+  if (el.closest?.('[class*="blp-"], [data-blp-enrich], [data-blp-values], [data-blp-card]')) {
+    return true;
+  }
+  return false;
+}
+
+/** Prices / percents / pure numbers — never dictionary-translate. */
+function looksLikePriceOrNumber(text) {
+  const s = String(text || '').trim();
+  if (!s) return false;
+  if (/[€$£₽₸¥₩]/.test(s)) return true;
+  if (/\d/.test(s) && /(?:KZT|USD|RUB|EUR|тенге|руб)/i.test(s)) return true;
+  if (/^-?\d+%$/.test(s)) return true;
+  if (/^\d[\d\s.,]*$/.test(s)) return true;
+  return false;
 }
 
 function normalizeKey(s) {
@@ -294,32 +348,38 @@ function looksLikeMergedStatuses(full) {
 
 /**
  * Safe: one control, no nested buttons/links (except self), only icons + text.
+ * Never flatten multi-span price stacks (that broke Steam price display).
  * @param {HTMLElement} el
  */
 function isSafeLabelTarget(el) {
+  if (isBlpManagedElement(el)) return false;
+  if (typeof el.className === 'string' && /\bblp-/.test(el.className)) return false;
+
   // Never touch a container that holds multiple actions
   const nestedInteractive = el.querySelectorAll('a, button, input, select, textarea');
   if (el.matches('a, button')) {
-    // nested interactive inside a button is rare; reject if another button/link inside
     if (el.querySelector('a, button')) return false;
+    // Price / external enrich links
+    if (el.classList?.contains('blp-price') || el.classList?.contains('blp-ext-link')) return false;
   } else if (nestedInteractive.length > 0) {
     return false;
   }
 
-  // Reject layout groups: several block children with their own text
   if (el.childElementCount > 4) return false;
 
-  // Only decorative element children allowed
-  for (const child of el.children) {
-    if (isDecorNode(child)) continue;
-    // one level of span wrapper with text is ok for <a><span>Label</span></a>
-    if (child.tagName === 'SPAN' && child.children.length === 0) continue;
-    if (child.tagName === 'SPAN' && [...child.children].every(isDecorNode)) continue;
-    return false;
+  // At most one non-decorative child (single optional <span> wrapper)
+  const nonDecor = [...el.children].filter((c) => !isDecorNode(c));
+  if (nonDecor.length > 1) return false;
+  if (nonDecor.length === 1) {
+    const only = nonDecor[0];
+    if (only.tagName !== 'SPAN') return false;
+    // Nested spans = price stack / compound UI — do not rewrite as one label
+    if (only.children.length > 0) return false;
   }
 
   const t = normalizeKey(el.textContent);
   if (!t || t.length > 120) return false;
+  if (looksLikePriceOrNumber(t)) return false;
   return true;
 }
 
@@ -349,6 +409,9 @@ function applyTextNode(textNode, pack) {
  */
 function translatePhrase(trimmed, pack) {
   if (/^undefined\s+лайк/i.test(trimmed)) return '0 лайков';
+
+  // Never rewrite prices / pure numbers (broke Steam tenge display)
+  if (looksLikePriceOrNumber(trimmed)) return null;
 
   // Repair known smashed sidebar labels if still present as one blob
   if (looksLikeMergedStatuses(trimmed)) return null;
