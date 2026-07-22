@@ -135,6 +135,8 @@ export function openSettings() {
           </select>
           <p class="blp-hint">${escapeHtml(t.uiLanguageHint)}</p>
         </div>
+        ${toggleHtml('translateSiteUi', draft.translateSiteUi !== false)}
+        ${hintHtml('translateSiteUiHint')}
       </section>
       </div>
       <div ${panelAttrs('game', activeTab)}>

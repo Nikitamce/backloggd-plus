@@ -11,6 +11,7 @@ import { scheduleCardBadges } from './cards.js';
 import { enrichGamePage } from './enrichment.js';
 import { bindFixMatchClicks, ensureNavSettingsButton } from './settings-panel.js';
 import { bindLogEditorExportObserver, ensureLogEditorExportMount } from './export-game.js';
+import { translateSiteUi } from './site-translate.js';
 
 export function scanPage() {
   ensureNavSettingsButton();
@@ -19,6 +20,7 @@ export function scanPage() {
   ensureLogEditorExportMount();
   enrichGamePage();
   scheduleCardBadges();
+  translateSiteUi();
 }
 
 export function isBlpManagedElement(el) {

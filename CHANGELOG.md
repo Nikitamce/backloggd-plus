@@ -5,6 +5,14 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.7.63] - 2026-07-19
+
+### Added
+
+- **Site UI translator** (branch feature): optional translation of native Backloggd chrome (nav, log statuses, stats labels, related tabs, etc.) via dictionary + light patterns
+- Settings → General: **Translate Backloggd site UI** (default on; currently ships a full **Russian** pack; other locales fall back to English site chrome)
+- Skips Plus-managed nodes, long prose, and game titles
+
 ## [0.7.62] - 2026-07-18
 
 ### Changed

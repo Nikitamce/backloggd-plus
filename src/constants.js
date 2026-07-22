@@ -89,6 +89,8 @@ export const LINK_DOMAINS = {
 export const DEFAULT_SETTINGS = {
   cacheHours: 12,
   uiLocale: 'auto',
+  /** Translate native Backloggd chrome (nav, buttons, stats labels) when a site-ui pack exists for the locale. */
+  translateSiteUi: true,
   steamCountry: 'US',
   showSteam: true,
   showMetacritic: true,
