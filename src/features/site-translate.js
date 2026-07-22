@@ -5,7 +5,9 @@ import {
   STEAMDB_ATTR,
 } from '../constants.js';
 import { getSiteUiPack } from '../i18n/site-ui.js';
+import { localizeGenre } from '../i18n/steam-labels.js';
 import { locale, settings } from '../state.js';
+import { localizeEnglishDateText } from '../utils/locale-date.js';
 
 const SKIP_TAGS = new Set([
   'SCRIPT',
@@ -24,9 +26,17 @@ const SKIP_TAGS = new Set([
   'CANVAS',
 ]);
 
-const ATTRS = ['placeholder', 'title', 'aria-label', 'alt'];
+const ATTRS = [
+  'placeholder',
+  'title',
+  'aria-label',
+  'alt',
+  'data-original-title',
+  'data-bs-original-title',
+  'data-bs-title',
+];
 
-/** Plus-owned roots — do not rewrite (avoids circular import with spa.js). */
+/** Plus-owned roots — do not rewrite native walker (categories/tags localized at render). */
 const BLP_SKIP_SEL = [
   `[${ENRICH_ATTR}]`,
   `[${STEAMDB_ATTR}]`,
@@ -56,26 +66,24 @@ function isBlpManagedElement(el) {
   return Boolean(el.closest?.(BLP_SKIP_SEL));
 }
 
-/** Avoid re-walking huge unchanged trees every scan when nothing SPA-changed. */
-let lastRunHref = '';
-let lastRunAt = 0;
-const MIN_RERUN_MS = 80;
+function normalizeKey(s) {
+  return String(s || '')
+    .replace(/\u00a0/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
 
 /**
- * Translate native Backloggd chrome (not Plus UI) via dictionary + light patterns.
- * Safe to call often: exact matches only, skips BLP-managed nodes and long prose.
+ * Translate native Backloggd chrome (not Plus UI) via dictionary + dates + light patterns.
  */
 export function translateSiteUi() {
   if (!settings.translateSiteUi) return;
   const pack = getSiteUiPack(locale);
-  if (!pack?.exact) return;
-
-  const now = Date.now();
-  const href = location.href;
-  // Always allow first run / navigation; debounce bursty mutation scans slightly
-  if (href === lastRunHref && now - lastRunAt < MIN_RERUN_MS) return;
-  lastRunHref = href;
-  lastRunAt = now;
+  if (!pack?.exact && locale === 'en') return;
+  // even without pack, date localization may still apply for non-en
+  if (!pack?.exact && locale !== 'en') {
+    /* allow date-only path */
+  }
 
   const root = document.body;
   if (!root) return;
@@ -86,7 +94,7 @@ export function translateSiteUi() {
 
 /**
  * @param {ParentNode} root
- * @param {import('../i18n/site-ui.js').SiteUiPack} pack
+ * @param {import('../i18n/site-ui.js').SiteUiPack | null} pack
  */
 function walkText(root, pack) {
   const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
@@ -98,10 +106,10 @@ function walkText(root, pack) {
         return NodeFilter.FILTER_REJECT;
       }
       if (isBlpManagedElement(parent)) return NodeFilter.FILTER_REJECT;
-      // Skip game descriptions / long review bodies (dictionary is short UI phrases)
       const raw = node.nodeValue;
-      if (!raw || !raw.trim()) return NodeFilter.FILTER_REJECT;
-      if (raw.trim().length > 80) return NodeFilter.FILTER_REJECT;
+      if (!raw || !normalizeKey(raw)) return NodeFilter.FILTER_REJECT;
+      // Allow slightly longer for date phrases / stats labels
+      if (normalizeKey(raw).length > 120) return NodeFilter.FILTER_REJECT;
       return NodeFilter.FILTER_ACCEPT;
     },
   });
@@ -121,34 +129,68 @@ function walkText(root, pack) {
 
 /**
  * @param {Text} textNode
- * @param {import('../i18n/site-ui.js').SiteUiPack} pack
+ * @param {import('../i18n/site-ui.js').SiteUiPack | null} pack
  */
 function applyTextNode(textNode, pack) {
   const raw = textNode.nodeValue;
   if (raw == null) return;
-  const trimmed = raw.trim();
+  const trimmed = normalizeKey(raw);
   if (!trimmed) return;
 
-  let next = pack.exact[trimmed];
-  if (!next && pack.patterns) {
-    for (const { re, replace } of pack.patterns) {
-      const m = trimmed.match(re);
-      if (!m) continue;
-      next = typeof replace === 'function' ? replace(m) : trimmed.replace(re, replace);
-      break;
-    }
-  }
+  const next = translatePhrase(trimmed, pack);
   if (!next || next === trimmed) return;
 
-  // Preserve leading/trailing whitespace of the original text node
   const lead = raw.match(/^\s*/)?.[0] ?? '';
   const trail = raw.match(/\s*$/)?.[0] ?? '';
   textNode.nodeValue = lead + next + trail;
 }
 
 /**
+ * @param {string} trimmed normalized
+ * @param {import('../i18n/site-ui.js').SiteUiPack | null} pack
+ */
+function translatePhrase(trimmed, pack) {
+  // 1) English date → locale
+  const asDate = localizeEnglishDateText(trimmed, locale);
+  if (asDate) return asDate;
+
+  // 2) "Релиз Feb 27, 2026" after partial translate of Released
+  const releaseDate = trimmed.match(/^(Релиз|Released)\s+(.+)$/i);
+  if (releaseDate) {
+    const d = localizeEnglishDateText(releaseDate[2], locale);
+    if (d) return `Релиз ${d}`;
+  }
+
+  if (!pack) return null;
+
+  // 3) exact dictionary (normalized keys)
+  if (pack.exact[trimmed]) return pack.exact[trimmed];
+  // also try original-style keys if map used multi-space variants
+  for (const [en, ru] of Object.entries(pack.exact)) {
+    if (normalizeKey(en) === trimmed) return ru;
+  }
+
+  // 4) patterns
+  if (pack.patterns) {
+    for (const { re, replace } of pack.patterns) {
+      const m = trimmed.match(re);
+      if (!m) continue;
+      return typeof replace === 'function' ? replace(m) : trimmed.replace(re, replace);
+    }
+  }
+
+  // 5) genre-only token (short word, linked genres)
+  if (trimmed.length <= 40 && !/\d/.test(trimmed)) {
+    const g = localizeGenre(trimmed, locale);
+    if (g !== trimmed) return g;
+  }
+
+  return null;
+}
+
+/**
  * @param {ParentNode} root
- * @param {import('../i18n/site-ui.js').SiteUiPack} pack
+ * @param {import('../i18n/site-ui.js').SiteUiPack | null} pack
  */
 function walkAttrs(root, pack) {
   if (!(root instanceof Element) && !(root instanceof Document) && !(root instanceof DocumentFragment)) {
@@ -158,7 +200,7 @@ function walkAttrs(root, pack) {
   if (!scope?.querySelectorAll) return;
 
   const els = scope.querySelectorAll(
-    '[placeholder], [title], [aria-label], img[alt], input[value]'
+    '[placeholder], [title], [aria-label], img[alt], input[value], [data-original-title], [data-bs-original-title], [data-bs-title]'
   );
   for (const el of els) {
     if (!(el instanceof HTMLElement)) continue;
@@ -169,41 +211,25 @@ function walkAttrs(root, pack) {
       if (!el.hasAttribute(attr)) continue;
       const val = el.getAttribute(attr);
       if (!val) continue;
-      const translated = translateString(val.trim(), pack);
-      if (translated && translated !== val.trim()) {
+      const key = normalizeKey(val);
+      const translated = translatePhrase(key, pack);
+      if (translated && translated !== key) {
         const lead = val.match(/^\s*/)?.[0] ?? '';
         const trail = val.match(/\s*$/)?.[0] ?? '';
         el.setAttribute(attr, lead + translated + trail);
       }
     }
 
-    // Submit / button inputs use value= for visible label
     if (
       el instanceof HTMLInputElement &&
       (el.type === 'submit' || el.type === 'button' || el.type === 'reset') &&
       el.value
     ) {
-      const translated = translateString(el.value.trim(), pack);
-      if (translated && translated !== el.value.trim()) {
+      const key = normalizeKey(el.value);
+      const translated = translatePhrase(key, pack);
+      if (translated && translated !== key) {
         el.value = translated;
       }
     }
   }
-}
-
-/**
- * @param {string} trimmed
- * @param {import('../i18n/site-ui.js').SiteUiPack} pack
- */
-function translateString(trimmed, pack) {
-  if (!trimmed) return null;
-  if (pack.exact[trimmed]) return pack.exact[trimmed];
-  if (pack.patterns) {
-    for (const { re, replace } of pack.patterns) {
-      const m = trimmed.match(re);
-      if (!m) continue;
-      return typeof replace === 'function' ? replace(m) : trimmed.replace(re, replace);
-    }
-  }
-  return null;
 }

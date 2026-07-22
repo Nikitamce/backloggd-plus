@@ -23,10 +23,13 @@ export const SITE_UI = {
       Profile: 'Профиль',
       Settings: 'Настройки',
       Logout: 'Выйти',
+      'Log Out': 'Выйти',
       'Sign in': 'Войти',
       'Sign up': 'Регистрация',
       'Log in': 'Войти',
       'Log out': 'Выйти',
+      'Sign Out': 'Выйти',
+      'Sign out': 'Выйти',
       Notifications: 'Уведомления',
       Messages: 'Сообщения',
       Following: 'Подписки',
@@ -77,6 +80,16 @@ export const SITE_UI = {
       Like: 'Нравится',
       Likes: 'Лайки',
       Unlike: 'Убрать лайк',
+      'Like this game': 'Нравится эта игра',
+      'Unlike this game': 'Убрать «нравится»',
+      Myself: 'Я',
+      Me: 'Я',
+      'Top Liked': 'Топ по лайкам',
+      'Nothing here!': 'Пока пусто!',
+      'Nothing here': 'Пока пусто',
+      'Personal Ratings': 'Личные оценки',
+      'Earned Badges': 'Полученные значки',
+      Badges: 'Значки',
       Comment: 'Комментарий',
       Comments: 'Комментарии',
       Replay: 'Реплей',
@@ -116,6 +129,31 @@ export const SITE_UI = {
       'to master': 'до мастерства',
       'Stats for all versions': 'Статистика по всем версиям',
       'Stats for this version': 'Статистика по этой версии',
+      'Stats for all versions ▾': 'Статистика по всем версиям ▾',
+      'Stats for all versions ▼': 'Статистика по всем версиям ▼',
+      'Stats for all versions ˅': 'Статистика по всем версиям ˅',
+      // Genres (IGDB labels on game page)
+      Adventure: 'Приключения',
+      Puzzle: 'Головоломка',
+      Shooter: 'Шутер',
+      Action: 'Экшен',
+      Strategy: 'Стратегия',
+      RPG: 'RPG',
+      'Role-playing (RPG)': 'RPG',
+      Simulator: 'Симулятор',
+      Simulation: 'Симулятор',
+      Racing: 'Гонки',
+      Sport: 'Спорт',
+      Sports: 'Спорт',
+      Fighting: 'Файтинг',
+      Platform: 'Платформер',
+      Indie: 'Инди',
+      Arcade: 'Аркада',
+      Horror: 'Хоррор',
+      'Point-and-click': 'Point-and-click',
+      'Visual Novel': 'Визуальная новелла',
+      Tactical: 'Тактика',
+      MOBA: 'MOBA',
       'More info on IGDB': 'Подробнее на IGDB',
       'Based on': 'На основе',
       members: 'участников',
@@ -300,6 +338,15 @@ export const SITE_UI = {
         re: /^(\d+(?:[.,]\d+)?)\s*h\s+to master$/i,
         replace: (_, n) => `${n} ч до мастерства`,
       },
+      // "Stats for all versions" + optional caret / whitespace variants
+      {
+        re: /^Stats\s+for\s+all\s+versions\s*([▾▼˅▾]?)$/i,
+        replace: (_, caret) => `Статистика по всем версиям${caret ? ` ${caret}` : ''}`.trim(),
+      },
+      {
+        re: /^Stats\s+for\s+this\s+version\s*([▾▼˅]?)$/i,
+        replace: (_, caret) => `Статистика по этой версии${caret ? ` ${caret}` : ''}`.trim(),
+      },
       // "50K Plays" style sometimes split; full phrase if present
       {
         re: /^Based on (\d[\d,]*) ratings?$/i,
@@ -309,7 +356,12 @@ export const SITE_UI = {
         re: /^(\d+)\s+games?$/i,
         replace: (_, n) => {
           const k = Number(n);
-          const word = k % 10 === 1 && k % 100 !== 11 ? 'игра' : k % 10 >= 2 && k % 10 <= 4 && (k % 100 < 10 || k % 100 >= 20) ? 'игры' : 'игр';
+          const word =
+            k % 10 === 1 && k % 100 !== 11
+              ? 'игра'
+              : k % 10 >= 2 && k % 10 <= 4 && (k % 100 < 10 || k % 100 >= 20)
+                ? 'игры'
+                : 'игр';
           return `${n} ${word}`;
         },
       },
@@ -321,6 +373,7 @@ export const SITE_UI = {
         re: /^Released (.+)$/i,
         replace: (_, d) => `Релиз ${d}`,
       },
+      // Marker: english dates are handled in site-translate via localizeEnglishDateText
     ],
   },
 };

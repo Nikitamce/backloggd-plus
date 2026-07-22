@@ -23,9 +23,11 @@ import {
   STEAM_USERDATA_URL,
 } from '../constants.js';
 import { fmt } from '../i18n/index.js';
+import { localizeSteamCategory, localizeSteamTag } from '../i18n/steam-labels.js';
 import { isLinkEnabled } from '../settings.js';
-import { settings, t } from '../state.js';
+import { locale, settings, t } from '../state.js';
 import { escapeAttr, escapeHtml } from '../utils/html.js';
+import { formatLocaleDate } from '../utils/locale-date.js';
 import { metacriticGameUrl } from '../utils/slug.js';
 import { bindGameCoverViewer, unbindGameCoverViewer } from './gallery.js';
 import { applySimilarGames, ensureSimilarMount, removeSimilarGamesUi } from './similar.js';
@@ -347,15 +349,7 @@ export function renderSteamPriceHtml(steam) {
 export function formatDiscountEndDate(unixSeconds) {
   const sec = Number(unixSeconds);
   if (!Number.isFinite(sec) || sec <= 0) return null;
-  try {
-    return new Date(sec * 1000).toLocaleDateString(undefined, {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-    });
-  } catch (_) {
-    return null;
-  }
+  return formatLocaleDate(sec);
 }
 
 export function buildExternalLinks({ title, slug, igdbUrl, steam }) {
@@ -624,10 +618,10 @@ export function renderSteamValues(steam, { owned = false, wishlist = false, slug
 
   if (settings.showSteamCategories !== false && steam.categories?.length) {
     const chips = steam.categories
-      .map(
-        (cat) =>
-          `<a class="blp-gs-chip blp-steam-category" href="${escapeAttr(steamCategoryUrl(cat.id))}" target="_blank" rel="noopener noreferrer">${escapeHtml(cat.description)}</a>`
-      )
+      .map((cat) => {
+        const label = localizeSteamCategory(cat.description, locale);
+        return `<a class="blp-gs-chip blp-steam-category" href="${escapeAttr(steamCategoryUrl(cat.id))}" target="_blank" rel="noopener noreferrer">${escapeHtml(label)}</a>`;
+      })
       .join('');
     parts.push({
       html: `<span class="blp-steam-categories">${chips}</span>`,
@@ -636,10 +630,10 @@ export function renderSteamValues(steam, { owned = false, wishlist = false, slug
 
   if (settings.showSteamTags !== false && steam.tags?.length) {
     const chips = steam.tags
-      .map(
-        (tag) =>
-          `<a class="blp-gs-chip blp-steam-tag" href="${escapeAttr(steamTagUrl(tag.name))}" target="_blank" rel="noopener noreferrer">${escapeHtml(tag.name)}</a>`
-      )
+      .map((tag) => {
+        const label = localizeSteamTag(tag.name, locale);
+        return `<a class="blp-gs-chip blp-steam-tag" href="${escapeAttr(steamTagUrl(tag.name))}" target="_blank" rel="noopener noreferrer">${escapeHtml(label)}</a>`;
+      })
       .join('');
     parts.push({
       html: `<span class="blp-steam-tags">${chips}</span>`,

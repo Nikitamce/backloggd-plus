@@ -5,6 +5,16 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.7.64] - 2026-07-19
+
+### Fixed / improved (translator)
+
+- Localize English site dates (`Feb 27, 2026` → `ru-RU` short date) and discount end dates via interface locale
+- More chrome strings: Log Out, Like this game, Myself, Top Liked, Nothing here!, Personal Ratings, Earned Badges, Stats for all versions variants
+- Genres (Adventure / Puzzle / …) and Steam categories / tags (RU maps)
+- GameStatus readable status: `Cracked in N day(s)` → Russian
+- Steam Deck **Playable** / related RU labels in Plus i18n
+
 ## [0.7.63] - 2026-07-19
 
 ### Added

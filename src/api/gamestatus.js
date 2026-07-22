@@ -12,6 +12,7 @@ import {
   GS_INVALID_SLUG_RE,
 } from '../constants.js';
 import { gmRequest } from '../gm.js';
+import { resolveGsStatusLabel } from '../i18n/gs-status.js';
 import { inflight, locale, t } from '../state.js';
 import { escapeAttr, escapeHtml } from '../utils/html.js';
 
@@ -223,13 +224,7 @@ export function getGsStatusType(game) {
 }
 
 export function getGsStatusLabel(game, type) {
-  if (!game) return t.gsNotInDatabase;
-  if (game.readable_status) return game.readable_status;
-  if (type === 'ready') return t.gsReady;
-  if (type === 'pending-recent' || type === 'pending-old') return t.gsPending;
-  if (type === 'partial') return t.gsPartial;
-  if (type === 'release-today') return t.gsReleaseToday;
-  return t.gsUnknown;
+  return resolveGsStatusLabel(game, type);
 }
 
 export function cleanGsChipToken(value) {
