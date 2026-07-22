@@ -5,6 +5,14 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.7.70] - 2026-07-19
+
+### Restored (price UX)
+
+- **FX conversion** from `feat/kz-region-price-convert`: `~ €2,6` / struck pre-discount convert next to Steam price
+- Settings → Game: **Show converted price** + target currency (EUR, RUB, …); Steam region list includes **KZ**
+- Sale layout: discount % · was/now ₸ · ends date · FX pair (as before the translator branch)
+
 ## [0.7.69] - 2026-07-19
 
 ### Fixed

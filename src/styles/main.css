@@ -1406,6 +1406,47 @@ img.blp-cover-zoomable:focus-visible {
   box-shadow: 0 0 0 1px rgba(190, 238, 17, 0.35);
 }
 
+/* Approximate FX conversion next to Steam price */
+[data-blp-enrich] .blp-price__fx {
+  display: inline-flex;
+  align-items: baseline;
+  flex-wrap: nowrap;
+  gap: 0.35em;
+  margin-left: 0.2em;
+  white-space: nowrap;
+  vertical-align: baseline;
+  color: var(--blp-muted, #9aa0a6);
+  font-weight: 600;
+  opacity: 0.92;
+}
+
+[data-blp-enrich] .blp-price__fx-now {
+  font-weight: 600;
+  color: var(--blp-muted, #9aa0a6);
+}
+
+[data-blp-enrich] .blp-price__fx-was {
+  font-size: 0.78em;
+  font-weight: 500;
+  color: var(--blp-muted, #9aa0a6);
+  text-decoration: line-through;
+  text-decoration-thickness: 1px;
+  opacity: 0.8;
+}
+
+.blp-card-badge--fx {
+  opacity: 0.88;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.blp-card-badge--fx-was {
+  font-size: 0.85em;
+  text-decoration: line-through;
+  opacity: 0.8;
+  margin-left: 0.25em;
+}
+
 [data-blp-enrich] .blp-discount-ends {
   display: inline-block;
   padding: 0.12em 0.4em;

@@ -92,6 +92,9 @@ export const DEFAULT_SETTINGS = {
   /** Translate native Backloggd chrome (nav, buttons, stats labels) when a site-ui pack exists for the locale. */
   translateSiteUi: true,
   steamCountry: 'US',
+  /** Approximate FX conversion after Steam store price (not a second Steam region). */
+  showPriceConvert: false,
+  convertCurrency: 'RUB',
   showSteam: true,
   showMetacritic: true,
   showOpenCritic: true,
