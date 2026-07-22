@@ -1339,6 +1339,14 @@ img.blp-cover-zoomable:focus-visible {
   align-items: center;
   gap: 0.35em 0.45em;
   text-decoration: none !important;
+  color: inherit;
+}
+
+[data-blp-enrich] .blp-price:link,
+[data-blp-enrich] .blp-price:visited,
+[data-blp-enrich] .blp-price:hover,
+[data-blp-enrich] .blp-price:active {
+  text-decoration: none !important;
 }
 
 [data-blp-enrich] .blp-price--sale {
@@ -1368,10 +1376,17 @@ img.blp-cover-zoomable:focus-visible {
   opacity: 0.85;
 }
 
+/* Only the old price is struck — never the live / sale price */
 [data-blp-enrich] .blp-price__now {
   font-weight: 700;
-  color: #beee11;
+  color: #beee11 !important;
   letter-spacing: 0.01em;
+  text-decoration: none !important;
+}
+
+[data-blp-enrich] .blp-price:not(.blp-price--sale) {
+  font-weight: 700;
+  text-decoration: none !important;
 }
 
 [data-blp-enrich] .blp-discount {
