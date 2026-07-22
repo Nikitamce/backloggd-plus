@@ -5,6 +5,14 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.7.72] - 2026-07-19
+
+### Fixed (GameStatus)
+
+- Card badge **Cracked on release** → **Взломана в день релиза** (more flexible match)
+- Strip long English disclaimers after **Hypervisor** / em dash on group chips (e.g. Denuvo Bypass warning)
+- Short RU chip: **Обход Denuvo Hypervisor**
+
 ## [0.7.71] - 2026-07-19
 
 ### Translator dictionary

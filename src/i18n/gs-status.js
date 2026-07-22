@@ -6,7 +6,10 @@ import { locale, t } from '../state.js';
  * @param {string} [loc]
  */
 export function localizeGsReadableStatus(status, loc = locale) {
-  const raw = String(status || '').trim();
+  const raw = String(status || '')
+    .replace(/\u00a0/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
   if (!raw) return raw;
   if (!loc || loc === 'en') return raw;
 
@@ -26,6 +29,11 @@ export function localizeGsReadableStatus(status, loc = locale) {
       const n = Number(m[1]);
       return `Не взломана ${n} ${ruDays(n)}`;
     }
+    // "Cracked on release" / "Cracked on Release day" variants
+    if (/^cracked on release\b/i.test(raw) || /^cracked on day\s*one\b/i.test(raw)) {
+      return 'Взломана в день релиза';
+    }
+
     const exact = {
       'Not cracked': 'Не взломана',
       Uncracked: 'Не взломана',
@@ -40,7 +48,6 @@ export function localizeGsReadableStatus(status, loc = locale) {
       'Native linux': 'Нативный Linux',
     };
     if (exact[raw]) return exact[raw];
-    // case-insensitive exact
     const lower = raw.toLowerCase();
     for (const [en, ru] of Object.entries(exact)) {
       if (en.toLowerCase() === lower) return ru;
@@ -48,6 +55,41 @@ export function localizeGsReadableStatus(status, loc = locale) {
   }
 
   return raw;
+}
+
+/**
+ * Shorten GameStatus group / protection chips.
+ * API often appends long English warnings after "Hypervisor" / em dash.
+ * Example: "Bypass by Denuvo Hypervisor – is bypass where you generally…"
+ * → "Bypass by Denuvo Hypervisor" (or RU short form).
+ * @param {string} name
+ * @param {string} [loc]
+ */
+export function localizeGsChipLabel(name, loc = locale) {
+  let s = String(name || '')
+    .replace(/\u00a0/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+  if (!s) return s;
+
+  // Drop long disclaimer after en/em dash or "is bypass where…"
+  s = s.replace(/\s*[–—−-]\s*is\s+bypass\b.*$/i, '');
+  s = s.replace(/\s+is\s+bypass\s+where\b.*$/i, '');
+  s = s.replace(/\s*Be careful!?\s*$/i, '');
+  // Anything after "Hypervisor" that looks like a sentence
+  s = s.replace(/(Hypervisor)\s*[–—−,:;-]?\s+.+$/i, '$1');
+  s = s.trim();
+
+  if (loc === 'ru') {
+    // "Bypass by Denuvo Hypervisor" → short RU
+    let m = s.match(/^Bypass by\s+(.+)$/i);
+    if (m) return `Обход ${m[1].trim()}`;
+    m = s.match(/^Bypass\s+(.+)$/i);
+    if (m) return `Обход ${m[1].trim()}`;
+    if (/^bypass$/i.test(s)) return 'Обход';
+  }
+
+  return s;
 }
 
 function ruDays(n) {

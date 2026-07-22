@@ -12,7 +12,7 @@ import {
   GS_INVALID_SLUG_RE,
 } from '../constants.js';
 import { gmRequest } from '../gm.js';
-import { resolveGsStatusLabel } from '../i18n/gs-status.js';
+import { localizeGsChipLabel, resolveGsStatusLabel } from '../i18n/gs-status.js';
 import { inflight, locale, t } from '../state.js';
 import { escapeAttr, escapeHtml } from '../utils/html.js';
 
@@ -278,14 +278,20 @@ export function renderGameStatusValues(entry) {
 
   const chips = [];
   for (const prot of splitGsChipValues(game.protections)) {
+    const label = localizeGsChipLabel(prot);
+    if (!label) continue;
     chips.push(
-      `<span class="blp-gs-chip ${gsProtectionChipClass(prot)}">${escapeHtml(prot)}</span>`
+      `<span class="blp-gs-chip ${gsProtectionChipClass(prot)}">${escapeHtml(label)}</span>`
     );
   }
   for (const group of splitGsChipValues(game.hacked_groups_en || game.hacked_groups)) {
-    const groupType = /bypass|обход|hypervisor/i.test(group) ? 'partial' : type;
+    const label = localizeGsChipLabel(group);
+    if (!label) continue;
+    const groupType = /bypass|обход|hypervisor/i.test(group) || /обход|hypervisor/i.test(label)
+      ? 'partial'
+      : type;
     chips.push(
-      `<span class="blp-gs-chip blp-gs-chip--${escapeAttr(groupType)}">${escapeHtml(group)}</span>`
+      `<span class="blp-gs-chip blp-gs-chip--${escapeAttr(groupType)}" title="${escapeAttr(label)}">${escapeHtml(label)}</span>`
     );
   }
   if (game.is_AAA) {
