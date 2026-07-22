@@ -36,10 +36,8 @@ const ATTRS = [
   'data-bs-title',
 ];
 
-/** Decorative children allowed inside a “simple” control (icon + label). */
-const DECOR_TAGS = new Set(['I', 'SVG', 'IMG', 'BR', 'PATH', 'USE', 'SPAN']);
+const DECOR_TAGS = new Set(['I', 'SVG', 'IMG', 'BR', 'PATH', 'USE']);
 
-/** Plus-owned roots — do not rewrite native walker (categories/tags localized at render). */
 const BLP_SKIP_SEL = [
   `[${ENRICH_ATTR}]`,
   `[${STEAMDB_ATTR}]`,
@@ -63,6 +61,38 @@ const BLP_SKIP_SEL = [
   '[data-blp-debug]',
 ].join(', ');
 
+const SITE_T_ATTR = 'data-blp-site-t';
+
+/** Inject once — keep translated labels readable (no smashed glyphs). */
+let styleInjected = false;
+function ensureTranslateStyles() {
+  if (styleInjected || typeof document === 'undefined') return;
+  styleInjected = true;
+  const s = document.createElement('style');
+  s.id = 'blp-site-translate-style';
+  s.textContent = `
+/* Site translator: prevent smashed / overlapping label text */
+[${SITE_T_ATTR}] {
+  letter-spacing: normal !important;
+  word-spacing: normal !important;
+  white-space: normal !important;
+  line-height: 1.25 !important;
+  text-overflow: unset;
+}
+button[${SITE_T_ATTR}],
+a.btn[${SITE_T_ATTR}],
+.btn[${SITE_T_ATTR}] {
+  white-space: nowrap !important;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding-left: 0.75rem !important;
+  padding-right: 0.75rem !important;
+}
+`;
+  document.documentElement.appendChild(s);
+}
+
 function isBlpManagedElement(el) {
   if (!el || el.nodeType !== 1) return false;
   if (el.matches?.(BLP_SKIP_SEL)) return true;
@@ -78,10 +108,6 @@ function normalizeKey(s) {
 }
 
 /**
- * Apply pack.patterns replace correctly.
- * Handlers are written like String.replace callbacks: (match, g1, g2, …) => …
- * We must spread RegExpMatchArray, not pass the array as a single arg
- * (that produced "undefined лайков").
  * @param {(…args: any[]) => string} replace
  * @param {RegExpMatchArray} m
  */
@@ -90,17 +116,50 @@ function applyPatternReplace(replace, m) {
 }
 
 /**
- * Translate native Backloggd chrome (not Plus UI) via dictionary + dates + light patterns.
+ * Set label text on a control while keeping decorative icons.
+ * Always ends as a single clean text node (avoids smashed multi-node labels).
+ * @param {HTMLElement} el
+ * @param {string} next
  */
+function setElementLabel(el, next) {
+  const icons = [];
+  for (const child of [...el.childNodes]) {
+    if (child.nodeType === 1) {
+      const tag = /** @type {Element} */ (child).tagName;
+      if (DECOR_TAGS.has(tag) || (tag === 'SPAN' && isIconOnlySpan(/** @type {HTMLElement} */ (child)))) {
+        icons.push(child);
+      }
+    }
+  }
+  while (el.firstChild) el.removeChild(el.firstChild);
+  for (const icon of icons) {
+    el.appendChild(icon);
+    // gap between icon and label
+    el.appendChild(document.createTextNode(' '));
+  }
+  // Use normal spaces explicitly; avoid NBSP-only runs
+  el.appendChild(document.createTextNode(String(next)));
+  el.setAttribute(SITE_T_ATTR, '1');
+}
+
+function isIconOnlySpan(el) {
+  if (!el || el.tagName !== 'SPAN') return false;
+  for (const c of el.children) {
+    if (!DECOR_TAGS.has(c.tagName)) return false;
+  }
+  // no meaningful text of its own
+  return !normalizeKey(el.textContent) || el.children.length > 0;
+}
+
 export function translateSiteUi() {
   if (!settings.translateSiteUi) return;
   if (locale === 'en') return;
 
+  ensureTranslateStyles();
   const pack = getSiteUiPack(locale);
   const root = document.body;
   if (!root) return;
 
-  // Compound labels first (icon+text buttons, split “Stats for all versions”)
   walkSimpleElements(root, pack);
   walkText(root, pack);
   walkAttrs(root, pack);
@@ -141,8 +200,6 @@ function walkText(root, pack) {
 }
 
 /**
- * Elements that only contain text + decorative icons (buttons, tabs, links).
- * Handles cases where the visible phrase is split across nodes or includes a caret.
  * @param {ParentNode} root
  * @param {import('../i18n/site-ui.js').SiteUiPack | null} pack
  */
@@ -153,9 +210,8 @@ function walkSimpleElements(root, pack) {
   const scope = root instanceof Element ? root : document.body;
   if (!scope?.querySelectorAll) return;
 
-  // Prefer real controls/labels — avoid scanning huge layout divs
   const els = scope.querySelectorAll(
-    'a, button, label, option, h1, h2, h3, h4, h5, h6, span, small, strong, em, p, li, th, td, select, summary'
+    'a, button, label, option, h1, h2, h3, h4, h5, h6, span, small, strong, em, p, li, th, td, select, summary, div.dropdown-toggle, [data-toggle="dropdown"], [data-bs-toggle="dropdown"]'
   );
 
   for (const el of els) {
@@ -170,52 +226,26 @@ function walkSimpleElements(root, pack) {
     const next = translatePhrase(full, pack);
     if (!next || next === full) continue;
 
-    // Preserve leading icon nodes; rewrite only text nodes
-    const textNodes = [];
-    const tw = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, null);
-    let tn = tw.nextNode();
-    while (tn) {
-      if (normalizeKey(tn.nodeValue)) textNodes.push(/** @type {Text} */ (tn));
-      tn = tw.nextNode();
-    }
-    if (!textNodes.length) continue;
-
-    if (textNodes.length === 1) {
-      const raw = textNodes[0].nodeValue || '';
-      const lead = raw.match(/^\s*/)?.[0] ?? '';
-      const trail = raw.match(/\s*$/)?.[0] ?? '';
-      textNodes[0].nodeValue = lead + next + trail;
-    } else {
-      // Put full translation on first text node; clear the rest (avoid "Stats"+"for all" partials)
-      const raw0 = textNodes[0].nodeValue || '';
-      const lead = raw0.match(/^\s*/)?.[0] ?? '';
-      textNodes[0].nodeValue = lead + next;
-      for (let i = 1; i < textNodes.length; i++) {
-        textNodes[i].nodeValue = '';
-      }
-    }
+    setElementLabel(el, next);
   }
 }
 
 /**
- * True if element has no “heavy” nested structure (only text + icons).
+ * Allow light nesting (dropdowns often wrap “Stats for all versions” + caret).
  * @param {HTMLElement} el
  */
 function isSimpleLabelElement(el) {
-  if (el.childElementCount === 0) return true;
-  for (const child of el.children) {
-    const tag = child.tagName;
-    if (DECOR_TAGS.has(tag)) {
-      // allow nested icon spans with only decorative content
-      if (tag === 'SPAN' && child.childElementCount > 0) {
-        for (const nested of child.children) {
-          if (!DECOR_TAGS.has(nested.tagName)) return false;
-        }
-      }
-      continue;
+  if (el.querySelector('div, table, ul, ol, form, input, textarea, select, iframe, video, canvas')) {
+    // select itself is ok when el is select
+    if (el.tagName !== 'SELECT' && el.querySelector('div, table, ul, ol, form, input, textarea, iframe')) {
+      return false;
     }
-    return false;
   }
+  if (el.childElementCount > 12) return false;
+  const t = normalizeKey(el.textContent);
+  if (!t || t.length > 200) return false;
+  // Huge layout shells
+  if (el.tagName === 'DIV' && el.childElementCount > 3 && t.length > 80) return false;
   return true;
 }
 
@@ -234,7 +264,12 @@ function applyTextNode(textNode, pack) {
 
   const lead = raw.match(/^\s*/)?.[0] ?? '';
   const trail = raw.match(/\s*$/)?.[0] ?? '';
-  textNode.nodeValue = lead + next + trail;
+  // Always use regular spaces in the translated body
+  textNode.nodeValue = lead + next.replace(/\u00a0/g, ' ') + trail;
+  const parent = textNode.parentElement;
+  if (parent && !parent.hasAttribute(SITE_T_ATTR)) {
+    parent.setAttribute(SITE_T_ATTR, '1');
+  }
 }
 
 /**
@@ -242,9 +277,12 @@ function applyTextNode(textNode, pack) {
  * @param {import('../i18n/site-ui.js').SiteUiPack | null} pack
  */
 function translatePhrase(trimmed, pack) {
-  // Fix already-broken "undefined лайков" from older builds if still in DOM
   if (/^undefined\s+лайк/i.test(trimmed)) {
     return '0 лайков';
+  }
+  // Repair previous smashed long labels if still in DOM
+  if (/^Защ/i.test(trimmed) && trimmed.length < 20 && !/\s/.test(trimmed)) {
+    return 'Запись';
   }
 
   const asDate = localizeEnglishDateText(trimmed, locale);
@@ -272,7 +310,8 @@ function translatePhrase(trimmed, pack) {
     }
   }
 
-  if (trimmed.length <= 40 && !/\d/.test(trimmed)) {
+  // Genre tokens only for short single words (not whole sentences)
+  if (trimmed.length <= 24 && !/\s/.test(trimmed) && !/\d/.test(trimmed)) {
     const g = localizeGenre(trimmed, locale);
     if (g !== trimmed) return g;
   }

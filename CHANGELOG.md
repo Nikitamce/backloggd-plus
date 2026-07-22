@@ -5,6 +5,15 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.7.67] - 2026-07-19
+
+### Fixed (translator)
+
+- **Log or review** smashed glyphs: short label **Запись**, clean single text node + CSS for translated buttons
+- **Stats for all versions** → short **Все версии** (better fit / split DOM)
+- Welcome-back tail, Latest news / Popular lists / Coming soon / Recently anticipated / Sleeper hits
+- setElementLabel keeps icons, rewrites label as one text node (no word smash)
+
 ## [0.7.66] - 2026-07-19
 
 ### Fixed (translator)

@@ -68,10 +68,12 @@ export const SITE_UI = {
       Off: 'Выкл',
 
       // —— Game page sidebar / actions ——
-      'Log or review': 'Запись или рецензия',
-      'Log or review again': 'Записать снова',
-      'Log again': 'Записать снова',
-      'Review again': 'Рецензия снова',
+      // Short labels for narrow pink/sidebar buttons (long text smashed glyphs)
+      'Log or review': 'Запись',
+      'Log or review again': 'Снова',
+      'Log again': 'Снова',
+      'Review again': 'Снова',
+      'Log or Review': 'Запись',
       Played: 'Пройдено',
       Playing: 'Играю',
       Backlog: 'Бэклог',
@@ -149,11 +151,14 @@ export const SITE_UI = {
       average: 'в среднем',
       'to finish': 'до конца',
       'to master': 'до мастерства',
-      'Stats for all versions': 'Статистика по всем версиям',
-      'Stats for this version': 'Статистика по этой версии',
-      'Stats for all versions ▾': 'Статистика по всем версиям ▾',
-      'Stats for all versions ▼': 'Статистика по всем версиям ▼',
-      'Stats for all versions ˅': 'Статистика по всем версиям ˅',
+      // Short — fits dropdown; long phrase often fails when split in DOM
+      'Stats for all versions': 'Все версии',
+      'Stats for this version': 'Эта версия',
+      'Stats for all versions ▾': 'Все версии ▾',
+      'Stats for all versions ▼': 'Все версии ▼',
+      'Stats for all versions ˅': 'Все версии ˅',
+      'all versions': 'все версии',
+      'this version': 'эта версия',
       // Genres (IGDB labels on game page)
       Adventure: 'Приключения',
       Puzzle: 'Головоломка',
@@ -193,6 +198,17 @@ export const SITE_UI = {
       Reviewed: 'Рецензия',
       'Completed on': 'Пройдено на',
       Completed: 'Пройдено',
+      'Latest news': 'Новости',
+      'See Past Articles': 'Архив',
+      'See past articles': 'Архив',
+      'Popular lists': 'Популярные списки',
+      'Coming soon': 'Скоро',
+      'Recently anticipated': 'Ожидаемые',
+      'Sleeper hits': 'Скрытые хиты',
+      "try shuffle sort when you can't decide what to play!":
+        'попробуй shuffle sort, если не знаешь во что поиграть!',
+      "try shuffle sort when you can't decide what to play":
+        'попробуй shuffle sort, если не знаешь во что поиграть',
       members: 'участников',
       Member: 'Участник',
       Members: 'Участники',
@@ -374,15 +390,19 @@ export const SITE_UI = {
       // "Stats for all versions" + optional caret / chevron variants
       {
         re: /^Stats\s+for\s+all\s+versions\s*([▾▼˅∨vVˆ^<>‹›]*)$/i,
-        replace: (m, caret) => `Статистика по всем версиям${caret ? ` ${caret}` : ''}`.trim(),
+        replace: (m, caret) => `Все версии${caret ? ` ${caret}` : ''}`.trim(),
       },
       {
         re: /^Stats\s+for\s+this\s+version\s*([▾▼˅∨vVˆ^<>‹›]*)$/i,
-        replace: (m, caret) => `Статистика по этой версии${caret ? ` ${caret}` : ''}`.trim(),
+        replace: (m, caret) => `Эта версия${caret ? ` ${caret}` : ''}`.trim(),
       },
       {
         re: /^Stats\s+for\s+all\s+versions/i,
-        replace: () => 'Статистика по всем версиям',
+        replace: () => 'Все версии',
+      },
+      {
+        re: /^Stats\s+for\b/i,
+        replace: () => 'Статистика',
       },
       // "50K Plays" style sometimes split; full phrase if present
       {
@@ -456,7 +476,11 @@ export const SITE_UI = {
         replace: () => 'С возвращением',
       },
       {
-        re: /^try shuffle sort when you can't decide what to play!$/i,
+        re: /^,?\s*try shuffle sort when you can't decide what to play!?\s*$/i,
+        replace: () => 'попробуй shuffle sort, если не знаешь во что поиграть!',
+      },
+      {
+        re: /try shuffle sort when you can't decide what to play!?/i,
         replace: () => 'попробуй shuffle sort, если не знаешь во что поиграть!',
       },
       // "4 reviewed" style journal line prefix
