@@ -30,6 +30,8 @@ export function localizeGsReadableStatus(status, loc = locale) {
       'Not cracked': 'Не взломана',
       Uncracked: 'Не взломана',
       Cracked: 'Взломана',
+      'Cracked on release': 'Взломана в день релиза',
+      'Cracked on day one': 'Взломана в день релиза',
       'Release today': 'Релиз сегодня',
       'Coming soon': 'Скоро',
       'Not released': 'Не вышла',

@@ -5,6 +5,16 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.7.71] - 2026-07-19
+
+### Translator dictionary
+
+- Library filters: Apply Filters, Display, sort options (When Added, Last Played, …), cover modes
+- Lists: Create List / Folder, N Lists
+- Activity: Recent Activity, Filter Activities, Your/Friends/Inbound Activity, Backer Upgrade
+- Profile: Edit Profile; pagination Prev / Next
+- GameStatus: Cracked on release
+
 ## [0.7.70] - 2026-07-19
 
 ### Restored (price UX)

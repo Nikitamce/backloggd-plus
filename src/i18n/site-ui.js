@@ -237,6 +237,74 @@ export const SITE_UI = {
       'Hide spoilers': 'Скрыть спойлеры',
       'Show spoilers': 'Показать спойлеры',
       members: 'участников',
+
+      // —— Filters / sort / display (library & lists) ——
+      'Apply Filters': 'Применить',
+      'Apply filters': 'Применить',
+      Filters: 'Фильтры',
+      Filter: 'Фильтр',
+      Display: 'Вид',
+      Sort: 'Сортировка',
+      'Sort by': 'Сортировать',
+      'Recently Updated': 'Недавно обновлённые',
+      'Recently updated': 'Недавно обновлённые',
+      'When Added': 'Когда добавлено',
+      'Last Played': 'Последний запуск',
+      'Time Played': 'Время в игре',
+      'User Rating': 'Ваша оценка',
+      'Game Rating': 'Оценка игры',
+      'Game Title': 'Название',
+      Popularity: 'Популярность',
+      'Release Date': 'Дата релиза',
+      'Avg. Play Time': 'Ср. время игры',
+      'Avg. Finish Time': 'Ср. время прохождения',
+      Random: 'Случайно',
+      'Fade played': 'Приглушать пройденные',
+      'Custom covers': 'Свои обложки',
+      'Any cover': 'Любые обложки',
+      'Your covers': 'Ваши обложки',
+      'No covers': 'Без обложек',
+      'Create List': 'Создать список',
+      'Create Folder': 'Создать папку',
+      'New List': 'Новый список',
+      'New Folder': 'Новая папка',
+      Folder: 'Папка',
+      Folders: 'Папки',
+
+      // —— Activity feed ——
+      'Recent Activity': 'Недавняя активность',
+      'No recent activity': 'Нет недавней активности',
+      'Filter Activities': 'Фильтр активности',
+      'Filter activities': 'Фильтр активности',
+      Showing: 'Показано',
+      "Friends' Activity": 'Активность друзей',
+      "Friends' activity": 'Активность друзей',
+      'Your Activity': 'Ваша активность',
+      'Your activity': 'Ваша активность',
+      'Inbound Activity': 'Входящая активность',
+      'Inbound activity': 'Входящая активность',
+      Follows: 'Подписки',
+      Followers: 'Подписчики',
+      'GuessThe.Game': 'GuessThe.Game',
+      'Backer Upgrade': 'Апгрейд Backer',
+      'View up to 60 days of activities when you become a backer':
+        'До 60 дней активности, если станете backer',
+      'become a backer': 'стать backer',
+
+      // —— Profile ——
+      'Edit Profile': 'Редактировать профиль',
+      'Edit profile': 'Редактировать профиль',
+
+      // —— Pagination ——
+      Prev: 'Назад',
+      '‹ Prev': '‹ Назад',
+      '< Prev': '< Назад',
+      'Next ›': 'Далее ›',
+      'Next >': 'Далее >',
+      Previous: 'Назад',
+      First: 'Первая',
+      Last: 'Последняя',
+      Page: 'Страница',
       Member: 'Участник',
       Members: 'Участники',
 
@@ -514,6 +582,45 @@ export const SITE_UI = {
       {
         re: /^(\d+)\s+reviewed\b/i,
         replace: (m, n) => `${n} · рецензия`,
+      },
+      // 0 Lists / 12 Lists
+      {
+        re: /^(\d+)\s+Lists?$/i,
+        replace: (m, n) => {
+          const k = Number(n);
+          const word =
+            k % 10 === 1 && k % 100 !== 11
+              ? 'список'
+              : k % 10 >= 2 && k % 10 <= 4 && (k % 100 < 10 || k % 100 >= 20)
+                ? 'списка'
+                : 'списков';
+          return `${n} ${word}`;
+        },
+      },
+      // Showing Friends' Activity
+      {
+        re: /^Showing\s+(.+)$/i,
+        replace: (m, rest) => {
+          const map = {
+            "Friends' Activity": 'Активность друзей',
+            "Friends' activity": 'Активность друзей',
+            'Your Activity': 'Ваша активность',
+            'Your activity': 'Ваша активность',
+            'Inbound Activity': 'Входящая активность',
+            'Inbound activity': 'Входящая активность',
+          };
+          const r = String(rest).trim();
+          return `Показано: ${map[r] || r}`;
+        },
+      },
+      // Pagination with arrows glued
+      {
+        re: /^[‹<]\s*Prev$/i,
+        replace: () => '‹ Назад',
+      },
+      {
+        re: /^Next\s*[›>]$/i,
+        replace: () => 'Далее ›',
       },
     ],
   },
