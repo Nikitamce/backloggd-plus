@@ -1,6 +1,22 @@
 import pkg from '../package.json' with { type: 'json' };
 
 export const REPO_URL = 'https://github.com/NemoKing1210/backloggd-plus';
+export const AUTHOR_NAME = 'NemoKing';
+export const AUTHOR_HANDLE = 'NemoKing1210';
+export const AUTHOR_URL = 'https://github.com/NemoKing1210';
+export const AUTHOR_EMAIL = 'nemoking1210@gmail.com';
+export const AUTHOR_AVATAR_URL = 'https://avatars.githubusercontent.com/u/58397369?s=96&v=4';
+export const AUTHOR_BACKLOGGD_URL = 'https://backloggd.com/u/NemoKing/';
+export const AUTHOR_BACKLOGGD_HANDLE = 'NemoKing';
+/** People credited in Settings → About (besides the author). */
+export const CONTRIBUTORS = [
+  {
+    name: 'Nikitamce',
+    handle: 'Nikitamce',
+    url: 'https://github.com/Nikitamce',
+    avatarUrl: 'https://avatars.githubusercontent.com/u/187407575?s=96&v=4',
+  },
+];
 export const SCRIPT_VERSION = pkg.version;
 export const SETTINGS_KEY = 'blp_settings';
 export const CACHE_KEY = 'blp_cache_v1';
@@ -21,6 +37,23 @@ export const CARD_CONCURRENCY = 3;
 export const CARD_ROOT_MARGIN = '240px 0px';
 export const CARD_SKIP_ANCESTOR =
   '#game-profile, #game-body, #logging-sidebar-section, .blp-settings-backdrop, .blp-fix-match-backdrop, .blp-export-backdrop';
+/** Mini-profile card tiers by Games Played count. */
+export const PROFILE_CARD_TIERS = [
+  { id: 'rookie', min: 0 },
+  { id: 'bronze', min: 25 },
+  { id: 'silver', min: 50 },
+  { id: 'gold', min: 100 },
+  { id: 'platinum', min: 200 },
+  { id: 'diamond', min: 300 },
+  { id: 'master', min: 500 },
+  { id: 'legend', min: 1000 },
+];
+export const PROFILE_HOVER_OPEN_MS = 280;
+export const PROFILE_HOVER_CLOSE_MS = 180;
+export const PROFILE_LEAVE_MS = 300;
+export const PROFILE_FETCH_CONCURRENCY = 2;
+/** Preload mini-profiles slightly before avatars enter the viewport. */
+export const PROFILE_PRELOAD_ROOT_MARGIN = '160px 0px';
 export const CACHE_HOURS_MAX = 168;
 /** Soft advisory budget for the settings meter (GM storage has no fixed quota). */
 export const CACHE_SOFT_LIMIT_BYTES = 5 * 1024 * 1024;
@@ -46,6 +79,7 @@ export const HLTB_SEARCH_URL = `${HLTB_SITE}/api/bleed`;
 export const ITAD_SITE = 'https://isthereanydeal.com';
 export const PCGW_SITE = 'https://www.pcgamingwiki.com';
 export const GOGDB_SITE = 'https://www.gogdb.org';
+export const GAMESLIKE_SITE = 'https://gameslike.co';
 export const STEAM_CDN_APPS = 'https://shared.fastly.steamstatic.com/store_item_assets/steam/apps';
 export const STEAM_CDN_STORE_ASSETS = 'https://shared.fastly.steamstatic.com/store_item_assets';
 export const STEAM_CDN_COMMUNITY_ICONS = 'https://shared.fastly.steamstatic.com/community_assets/images/apps';
@@ -73,6 +107,7 @@ export const LINK_KEYS = [
   'pcgamingwiki',
   'itad',
   'gogdb',
+  'gameslike',
 ];
 export const LINK_DOMAINS = {
   igdb: 'igdb.com',
@@ -84,10 +119,36 @@ export const LINK_DOMAINS = {
   pcgamingwiki: 'pcgamingwiki.com',
   itad: 'isthereanydeal.com',
   gogdb: 'gogdb.org',
+  gameslike: 'gameslike.co',
 };
+
+/** Steam Store `cc` codes in Settings (ISO 3166-1 alpha-2). */
+export const STEAM_COUNTRY_CODES = [
+  'US',
+  'GB',
+  'DE',
+  'FR',
+  'RU',
+  'KZ',
+  'BR',
+  'JP',
+  'KR',
+  'CN',
+  'AU',
+  'CA',
+  'PL',
+  'ES',
+  'IT',
+  'TR',
+  'UA',
+];
 
 export const DEFAULT_SETTINGS = {
   cacheHours: 12,
+  cacheGameData: true,
+  cacheUserProfiles: true,
+  cacheTranslations: true,
+  cacheFx: true,
   uiLocale: 'auto',
   /** Translate native Backloggd chrome (nav, buttons, stats labels) when a site-ui pack exists for the locale. */
   translateSiteUi: true,
@@ -122,6 +183,24 @@ export const DEFAULT_SETTINGS = {
   showCardBadgeWishlist: true,
   showCardBadgeGameStatus: true,
   showExport: false,
+  showGameId: false,
+  showTranslate: true,
+  translateTargetLocale: 'auto',
+  translateDisplayMode: 'replace',
+  translateDescription: true,
+  translateReviews: true,
+  translateReviewsAuto: false,
+  hideHomepageFuse: true,
+  enhanceHeader: false,
+  showUserMiniProfile: true,
+  preloadUserMiniProfile: false,
+  showProfilePage: true,
+  showProfileHeader: true,
+  showProfileTierChip: true,
+  showProfileStats: true,
+  showProfileNav: true,
+  showProfileFavorites: true,
+  showProfileMenuSettings: false,
   debugMode: false,
   links: {
     igdb: true,
@@ -133,5 +212,6 @@ export const DEFAULT_SETTINGS = {
     pcgamingwiki: true,
     itad: true,
     gogdb: true,
+    gameslike: true,
   },
 };

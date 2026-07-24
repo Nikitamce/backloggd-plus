@@ -9,8 +9,13 @@ import {
 import { debounce } from '../utils/debounce.js';
 import { scheduleCardBadges } from './cards.js';
 import { enrichGamePage } from './enrichment.js';
+import { applyHomepageFuseVisibility } from './homepage.js';
+import { applyFloatingHeader } from './header.js';
 import { bindFixMatchClicks, ensureNavSettingsButton } from './settings-panel.js';
 import { bindLogEditorExportObserver, ensureLogEditorExportMount } from './export-game.js';
+import { scheduleUserMiniProfiles } from './user-mini-profile.js';
+import { scheduleProfilePage } from './profile-page.js';
+import { syncTranslateUi } from './translate.js';
 import { translateSiteUi } from './site-translate.js';
 
 export function scanPage() {
@@ -18,8 +23,13 @@ export function scanPage() {
   bindFixMatchClicks();
   bindLogEditorExportObserver();
   ensureLogEditorExportMount();
+  applyHomepageFuseVisibility();
+  applyFloatingHeader();
   enrichGamePage();
   scheduleCardBadges();
+  scheduleUserMiniProfiles();
+  scheduleProfilePage();
+  syncTranslateUi();
   translateSiteUi();
 }
 
@@ -33,7 +43,9 @@ export function isBlpManagedElement(el) {
     el.hasAttribute?.(CARD_STATE_ATTR) ||
     el.hasAttribute?.('data-blp-debug') ||
     el.hasAttribute?.('data-blp-token') ||
+    el.hasAttribute?.('data-blp-translate') ||
     el.id === 'blp-nav-settings' ||
+    el.id === 'blp-profile-menu-settings' ||
     el.id === 'blp-steam-backloggd-btn' ||
     el.id === 'blp-steamdb-backloggd-btn'
   ) {
@@ -52,15 +64,24 @@ export function isBlpManagedElement(el) {
     el.classList?.contains('blp-similar') ||
     el.classList?.contains('blp-viewer') ||
     el.classList?.contains('blp-title-icon-wrap') ||
+    el.classList?.contains('blp-game-id') ||
     el.classList?.contains('blp-toast-host') ||
     el.classList?.contains('blp-toast') ||
-    el.id === 'blp-toast-host'
+    el.classList?.contains('blp-ump') ||
+    el.classList?.contains('blp-ump-avatar-spin') ||
+    el.classList?.contains('blp-profile-tier-chip') ||
+    el.classList?.contains('blp-translate-btn') ||
+    el.classList?.contains('blp-translate-result') ||
+    el.classList?.contains('blp-translate-desc-slot') ||
+    el.classList?.contains('blp-translate-review-slot') ||
+    el.id === 'blp-toast-host' ||
+    el.id === 'blp-user-mini-profile'
   ) {
     return true;
   }
   return Boolean(
     el.closest?.(
-      `[${ENRICH_ATTR}], [${STEAMDB_ATTR}], [${SIMILAR_ATTR}], [${CARD_ATTR}], .blp-card-badges, .blp-settings-backdrop, .blp-fix-match-backdrop, .blp-export-backdrop, .blp-export-wrap, .blp-export-log-wrap, [data-blp-debug], #blp-nav-settings, #blp-toast-host, .blp-toast-host`
+      `[${ENRICH_ATTR}], [${STEAMDB_ATTR}], [${SIMILAR_ATTR}], [${CARD_ATTR}], .blp-card-badges, .blp-settings-backdrop, .blp-fix-match-backdrop, .blp-export-backdrop, .blp-export-wrap, .blp-export-log-wrap, [data-blp-debug], [data-blp-translate], .blp-translate-btn, .blp-translate-result, .blp-translate-desc-slot, .blp-translate-review-slot, #blp-nav-settings, #blp-profile-menu-settings, #blp-toast-host, .blp-toast-host, #blp-user-mini-profile, .blp-ump, .blp-ump-avatar-spin, .blp-profile-tier-chip`
     )
   );
 }

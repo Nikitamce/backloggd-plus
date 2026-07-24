@@ -4,8 +4,8 @@
 [![Install userscript](https://img.shields.io/badge/Install-userscript-7c5cff?style=for-the-badge)](https://raw.githubusercontent.com/NemoKing1210/backloggd-plus/main/backloggd-plus.user.js)
 [![Greasy Fork](https://img.shields.io/badge/Greasy_Fork-587296-1a1d24?style=for-the-badge&labelColor=670000)](https://greasyfork.org/ru/scripts/587296-backloggd-plus)
 [![ScriptCat](https://img.shields.io/badge/ScriptCat-7077-1a1d24?style=for-the-badge&labelColor=f59e0b)](https://scriptcat.org/ru/script-show-page/7077)
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg?style=for-the-badge)](LICENSE)
-[![Version](https://img.shields.io/badge/version-0.7.62-green?style=for-the-badge)](CHANGELOG.md)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg?style=for-the-badge)](https://github.com/NemoKing1210/backloggd-plus/blob/main/LICENSE)
+[![Version](https://img.shields.io/badge/version-0.7.82-green?style=for-the-badge)](https://github.com/NemoKing1210/backloggd-plus/blob/main/CHANGELOG.md)
 
 A userscript that extends [Backloggd](https://www.backloggd.com) with extra game information, richer UI, and quality-of-life improvements — without leaving the site.
 
@@ -20,19 +20,19 @@ Also listed on [Greasy Fork](https://greasyfork.org/ru/scripts/587296-backloggd-
 ## Screenshots
 
 <p align="center">
-  <img src="docs/screenshots/game-page-steam.png" alt="Game page — Steam enrichment, Deck/Proton, GameStatus, and quick links" width="900" />
+  <img src="https://raw.githubusercontent.com/NemoKing1210/backloggd-plus/main/docs/screenshots/game-page-steam.png" alt="Game page — Steam enrichment, Deck/Proton, GameStatus, and quick links" width="900" />
   <br />
   <em>Game page — Steam (owned · price · reviews · tags), Metacritic, Deck/Proton, players, GameStatus, links</em>
 </p>
 
 <p align="center">
-  <img src="docs/screenshots/game-page-stats.png" alt="Game page — Plus rating, screenshots gallery, and similar games" width="900" />
+  <img src="https://raw.githubusercontent.com/NemoKing1210/backloggd-plus/main/docs/screenshots/game-page-stats.png" alt="Game page — Plus rating, screenshots gallery, and similar games" width="900" />
   <br />
   <em>Game page — Plus rating average, Steam screenshots gallery, similar games with cover badges</em>
 </p>
 
 <p align="center">
-  <img src="docs/screenshots/settings.png" alt="Settings panel — Game page toggles" width="700" />
+  <img src="https://raw.githubusercontent.com/NemoKing1210/backloggd-plus/main/docs/screenshots/settings.png" alt="Settings panel — Game page toggles" width="700" />
   <br />
   <em>Settings — Game page toggles</em>
 </p>
@@ -65,7 +65,7 @@ Paste the [GitHub install URL](#quick-install) above when installing from a mana
 
 ### Manual install
 
-1. Open the built [`backloggd-plus.user.js`](backloggd-plus.user.js) in this repository (or run `npm run build` after cloning).
+1. Open the built [`backloggd-plus.user.js`](https://github.com/NemoKing1210/backloggd-plus/blob/main/backloggd-plus.user.js) in this repository (or run `npm run build` after cloning).
 2. Copy the entire file contents.
 3. In your userscript manager, create a new script and paste the code.
 4. Save and enable the script.
@@ -74,12 +74,7 @@ Paste the [GitHub install URL](#quick-install) above when installing from a mana
 
 The script includes `@updateURL` and `@downloadURL` metadata pointing to the raw GitHub file. Supported managers check for updates automatically.
 
-**To release a new version:**
-
-1. Bump `version` in [`package.json`](package.json).
-2. Run `npm run build` (regenerates root `backloggd-plus.user.js` / `.meta.js`).
-3. Add an entry to [`CHANGELOG.md`](CHANGELOG.md).
-4. Push to `main` (or create a GitHub Release).
+Release steps for maintainers: see [DEVELOPMENT.md § Releases](https://github.com/NemoKing1210/backloggd-plus/blob/main/DEVELOPMENT.md#releases).
 
 ## Features
 
@@ -90,17 +85,19 @@ The script includes `@updateURL` and `@downloadURL` metadata pointing to the raw
 - SteamDB visuals: app icon before the title, logo under **Change cover**, online player count
 - SteamDB details row: franchise / OS from Steam store APIs; technologies & last record update from SteamDB when reachable
 - Export button under the Steam header and in the log editor (optional; Settings → Game; Notion CSV / Markdown / JSON)
+- Optional Backloggd game ID after the title (Settings → Game; click to copy)
+- Translate buttons on the game description and review cards (Settings → Translation; Google Translate)
 - Steam header / community icon on game pages; screenshot gallery after game stats
 - Similar games under screenshots (Steam More Like This) with tag match %; cards link to Backloggd and can show the same cover badges as list grids
 - Skeleton placeholders while Steam / GameStatus / score data loads
-- Quick links with favicons (IGDB, Steam, SteamDB, Metacritic, OpenCritic, HLTB, PCGamingWiki, IsThereAnyDeal, GOG DB)
+- Quick links with favicons (IGDB, Steam, SteamDB, Metacritic, OpenCritic, HLTB, PCGamingWiki, IsThereAnyDeal, GOG DB, GamesLike)
 - Steam **Owned** / **Wishlist** badges when you are logged into Steam in the same browser (no API key)
 - GameStatus status badges on game pages and cover grids
 - Works without API keys (Steam Store public endpoints + session userdata + GameStatus / HLTB / OpenCritic / ProtonDB public APIs)
 
 **Lists / search / journal (cover grids):**
 
-- Compact badges on `.game-cover` cards — price, Steam review %, Owned, Wishlist, GameStatus (lazy-loaded in viewport; per-type toggles in Settings → Lists)
+- Compact badges on `.game-cover` cards — price, Steam review %, Owned, Wishlist, GameStatus (lazy-loaded in viewport; per-type toggles in Settings → Game card)
 - Same cover badges on Similar games cards (game page strip)
 
 **Steam app pages** (`store.steampowered.com/app/*`, `steamcommunity.com/app/*`):
@@ -115,12 +112,13 @@ The script includes `@updateURL` and `@downloadURL` metadata pointing to the raw
 
 **Settings** (navbar **Plus** on Backloggd / userscript manager menu):
 
-- Tabbed panel: General · Game page · Lists · Links · Cache · Debug
+- Tabbed panel: General · User profile · Game page · Game card · Translation · Cache · Debug · About
 - Interface language (Auto or fixed locale)
+- User profile: mini-profile hover cards (optional viewport preload); profile-page tier chrome with per-block toggles (header, tier chip, stats, nav, favorites)
 - Steam store region (price currency)
-- Toggles for Steam / owned / wishlist / tags / Metacritic / OpenCritic / HLTB / Deck·Proton / GameStatus / players / SteamDB icon & logo / screenshots gallery / similar games / native game stats block / list cover badges (per type) / links / Steam & SteamDB Backloggd buttons
+- Toggles for Steam / owned / wishlist / tags / Metacritic / OpenCritic / HLTB / Deck·Proton / GameStatus / players / SteamDB icon & logo / screenshots gallery / similar games / native game stats block / game ID / translation (description & reviews) / list cover badges (per type) / links / Steam & SteamDB Backloggd buttons
 - Debug mode: one panel with clickable source links and a full response dump
-- Per-site link visibility (IGDB, Steam, SteamDB, Metacritic, OpenCritic, HLTB, PCGamingWiki, IsThereAnyDeal, GOG DB)
+- Per-site link visibility (IGDB, Steam, SteamDB, Metacritic, OpenCritic, HLTB, PCGamingWiki, IsThereAnyDeal, GOG DB, GamesLike)
 - Cache duration + clear cache (expired prune + LRU soft limit; library/tag map keep short TTLs; online players are live)
 
 ## Supported pages
@@ -133,101 +131,18 @@ The script includes `@updateURL` and `@downloadURL` metadata pointing to the raw
 | Steam Community (app) | `https://steamcommunity.com/app/*` |
 | SteamDB (app) | `https://steamdb.info/app/*` |
 
-## How it works
+## Development & contributing
 
-```
-Backloggd game page                    Steam / SteamDB app page
-       │                                      │
-       ▼                                      ▼
-Enrichment rows (Steam/MC/Links)     Steam: .apphub_OtherSiteInfo
-       │                             SteamDB: nav.app-links → .btn
-       ▼
-storesearch → appdetails
-```
-
-SPA navigations on Backloggd use Turbo events, `MutationObserver`, and an href poll.
-
-## Repository layout
-
-```text
-backloggd-plus/
-├── src/                     # ESM source (edit here)
-│   ├── main.js              # Bootstrap / init
-│   ├── api/                 # External data fetchers
-│   ├── features/            # UI features (enrichment, cards, …)
-│   ├── i18n/                # Translations
-│   ├── styles/              # CSS
-│   └── utils/               # Shared helpers
-├── docs/screenshots/        # README preview images
-├── package.json             # Version + npm scripts
-├── vite.config.js           # Vite + vite-plugin-monkey metadata
-├── backloggd-plus.user.js   # Built installable userscript (committed)
-├── backloggd-plus.meta.js   # Built metadata companion (committed)
-├── README.md                # Documentation and install instructions
-├── CHANGELOG.md             # Version history
-├── LICENSE                  # MIT license
-└── .gitattributes           # GitHub linguist overrides
-```
-
-| File | Purpose |
-|------|---------|
-| `src/` | Source of truth for script logic (modules) |
-| `backloggd-plus.user.js` | Full script served at `@downloadURL` / `@updateURL` (build output) |
-| `backloggd-plus.meta.js` | Lightweight metadata mirror; managers may fetch it instead of the full script when checking for updates |
-
-## Script metadata
-
-Key `// ==UserScript==` fields used by managers:
-
-| Field | Value |
-|-------|-------|
-| `@namespace` | `https://github.com/NemoKing1210/backloggd-plus` |
-| `@version` | Semantic version (must be bumped on every release) |
-| `@updateURL` / `@downloadURL` | Raw GitHub URL of `backloggd-plus.user.js` |
-| `@homepageURL` | This repository |
-| `@supportURL` | GitHub Issues |
-| `@license` | MIT |
-| `@grant` | `GM_xmlhttpRequest`, `GM_getValue`, `GM_setValue`, `GM_addStyle`, `GM_registerMenuCommand` |
-| `@connect` | `store.steampowered.com`, `api.steampowered.com`, `steamdb.info`, `gamestatus.info`, … |
-| `@match` | Backloggd `/*`, Steam Store/Community `/app/*`, SteamDB `/app/*` |
-
-Localized `@name` and `@description` tags are provided for en, ru, zh-CN, es, pt-BR, de, fr, ja, ko, and pl.
-
-## Required permissions
-
-| Grant | Purpose |
-|-------|---------|
-| `GM_xmlhttpRequest` | Fetch external data when features need it (bypasses CORS) |
-| `GM_getValue` / `GM_setValue` | Persist settings and cache between sessions |
-| `GM_addStyle` | Inject UI styles |
-| `GM_registerMenuCommand` | Open settings from the manager menu |
-
-`@connect` covers Steam Store / Steam Web API, SteamDB (optional HTML meta), and GameStatus / HLTB / OpenCritic / ProtonDB.
-
-## Development
-
-Requires [Node.js](https://nodejs.org/) (npm).
+- [DEVELOPMENT.md](https://github.com/NemoKing1210/backloggd-plus/blob/main/DEVELOPMENT.md) — local setup, repo layout, metadata, permissions, releases
+- [CONTRIBUTING.md](https://github.com/NemoKing1210/backloggd-plus/blob/main/CONTRIBUTING.md) — PR guidelines, conventions, localization, contributors
+- [AGENTS.md](https://github.com/NemoKing1210/backloggd-plus/blob/main/AGENTS.md) — architecture notes for AI coding agents
 
 ```bash
 npm install
-npm run dev      # Vite serve — open/install the generated "dev:" userscript
+npm run dev      # Vite serve — install the generated "dev:" userscript
 npm run build    # Production → dist/ + copy to repo root
-npm run ci       # Same checks as GitHub Actions (build + verify artifacts)
+npm run ci       # Same checks as GitHub Actions
 ```
-
-Edit files under [`src/`](src/) (entry: [`src/main.js`](src/main.js)). Userscript metadata (`@match`, `@connect`, localized names, …) lives in [`vite.config.js`](vite.config.js). Version is `package.json` → header `@version` and in-script `SCRIPT_VERSION`.
-
-After changes that should ship, run `npm run build` and commit the regenerated root `.user.js` / `.meta.js`. Pull requests run [CI](.github/workflows/ci.yml), which fails if those files are out of date.
-
-### Local workflow notes
-
-- **`npm run dev`:** vite-plugin-monkey serves an installable userscript (name prefixed with `dev:`). Install it once in Tampermonkey, Violentmonkey, or ScriptCat; HMR applies while the server runs.
-- **Built file:** after `npm run build`, you can also install the root `backloggd-plus.user.js` (Violentmonkey **Track local file** still works on that artifact).
-- Do not commit localhost `@updateURL` / `@downloadURL` values.
-
-### Configuration
-
-Shared constants live in [`src/constants.js`](src/constants.js); feature toggles and UI strings are in settings / `src/i18n/`.
 
 ## Affiliation
 
@@ -235,4 +150,4 @@ This project is **not affiliated** with Backloggd. It is an independent communit
 
 ## License
 
-[MIT](LICENSE) — Copyright (c) 2026 NemoKing
+[MIT](https://github.com/NemoKing1210/backloggd-plus/blob/main/LICENSE) — Copyright (c) 2026 NemoKing

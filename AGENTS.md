@@ -17,10 +17,12 @@ Built with [Vite](https://vitejs.dev/) + [vite-plugin-monkey](https://github.com
 - **Source:** `src/main.js`
 - **Canonical install artifacts (committed):** `backloggd-plus.user.js`, `backloggd-plus.meta.js` (also `@downloadURL` / `@updateURL`)
 - **Version source of truth:** `package.json` `version` (userscript header + `SCRIPT_VERSION`)
-- **Docs:** `README.md`, `CHANGELOG.md` (Keep a Changelog + SemVer), `docs/screenshots/`
+- **Docs:** `README.md`, `DEVELOPMENT.md`, `CONTRIBUTING.md`, `CHANGELOG.md` (Keep a Changelog + SemVer), `docs/screenshots/`, `docs/platforms/` (Greasy Fork / ScriptCat listing copy)
 - **License:** MIT
 
 Edit source under `src/`, then run `npm run build` to refresh the root install files. Do not hand-edit the built `.user.js` / `.meta.js`.
+
+When user-facing README content changes (features, screenshots, status, supported pages, install/update notes, contributors, affiliation), keep `docs/platforms/greasyfork.md` and `docs/platforms/scriptcat.md` in sync — those files are the paste-ready Additional info for the catalog listings. Prefer absolute GitHub/`raw.githubusercontent.com` URLs in README and platform docs so images and links work outside the repo.
 
 ## Repository layout
 
@@ -33,7 +35,7 @@ backloggd-plus/
 │   ├── settings.js          # load/save settings, link helpers
 │   ├── cache.js             # GM lookup cache + overrides
 │   ├── gm.js                # GM_xmlhttpRequest wrapper
-│   ├── i18n/                # TRANSLATIONS + locale helpers
+│   ├── i18n/                # TRANSLATIONS (locales/*.js) + locale helpers
 │   ├── utils/               # html, title match, debounce, slug
 │   ├── styles/              # CSS (injected via vite-plugin-monkey)
 │   ├── api/                 # Steam, SteamDB meta, HLTB, OpenCritic, ProtonDB, GameStatus
@@ -42,7 +44,9 @@ backloggd-plus/
 │   ├── copy-dist.mjs        # Copies dist → root after build
 │   ├── verify-artifacts.mjs # CI: dist ↔ root + git freshness
 │   └── lib/artifacts.mjs    # Shared artifact filenames
-├── docs/screenshots/        # README preview images
+├── docs/
+│   ├── screenshots/         # README / catalog preview images
+│   └── platforms/           # Greasy Fork / ScriptCat listing descriptions
 ├── .github/
 │   ├── workflows/ci.yml     # Build + verify committed artifacts
 │   └── dependabot.yml
@@ -51,7 +55,9 @@ backloggd-plus/
 ├── backloggd-plus.meta.js   # Built metadata-only mirror for update checks
 ├── package.json
 ├── vite.config.js
-├── README.md
+├── README.md                # User-facing install + features
+├── DEVELOPMENT.md           # Local setup, layout, releases
+├── CONTRIBUTING.md          # PR guidelines + contributors
 ├── CHANGELOG.md
 ├── LICENSE
 ├── AGENTS.md                # This file (cross-tool agent instructions)
@@ -62,8 +68,8 @@ backloggd-plus/
 
 1. Match Backloggd and Steam app pages at `document-idle`.
 2. On **Backloggd:** bootstrap styles, settings, DOM scan, `MutationObserver`, and Turbo/href SPA hooks.
-3. **Game pages:** inject native detail rows after `#game-page-platforms` (`Steam` = owned · wishlist · price · sale end/recent low · reviews · categories · tags, `SteamDB` = franchise · supported systems · technologies · last record update, `Metacritic`, `OpenCritic`, `HLTB`, `Deck/Proton`, `Players`, `GameStatus`, `Links`); SteamDB icon before `h1`, logo under **Change cover** (shimmer skeletons first, fade in when assets load) with an **Export** button beneath it and in the log editor footer when Settings → Game → Show export is on (modal → Notion CSV / Markdown / JSON; text/numeric rating; Date start/end, Platform Windows PC→PC, Is DLC from log modal); Steam screenshots gallery after `turbo-frame#game-stats` (store `appdetails` screenshots; reusable `openBlpImageViewer` lightbox with zoom/pan/filmstrip); similar games strip under screenshots (`IStoreQueryService/MoreLikeThis` + weighted tag Jaccard %; cards → Backloggd; same cover badges as list grids when enabled); resolve title + IGDB link from DOM. Skeletons while Steam/GS/scores load; rows paint progressively as each source returns; link favicons via Google s2. **Fix match** stores a per-slug Steam App ID override (`blp_steam_overrides`).
-4. **List/cover grids:** viewport-lazy badges on `.game-cover` (price / Steam review % / owned / wishlist / GameStatus; per-type toggles under Settings → Lists) with request concurrency limits; on the game page, the same badge pipeline targets Similar games covers instead.
+3. **Game pages:** inject native detail rows after `#game-page-platforms` (`Steam` = owned · wishlist · price · sale end/recent low · reviews · categories · tags, `SteamDB` = franchise · supported systems · technologies · last record update, `Metacritic`, `OpenCritic`, `HLTB`, `Deck/Proton`, `Players`, `GameStatus`, `Links`); SteamDB icon before `h1`, optional Backloggd game ID after the title from `#game-page-meta[data-game-id]` when Settings → Game → Show game ID is on (click copies numeric ID); logo under **Change cover** (shimmer skeletons first, fade in when assets load) with an **Export** button beneath it and in the log editor footer when Settings → Game → Show export is on (modal → Notion CSV / Markdown / JSON; text/numeric rating; Date start/end, Platform Windows PC→PC, Is DLC from log modal); Steam screenshots gallery after `turbo-frame#game-stats` (store `appdetails` screenshots; reusable `openBlpImageViewer` lightbox with zoom/pan/filmstrip); similar games strip under screenshots (`IStoreQueryService/MoreLikeThis` + weighted tag Jaccard %; cards → Backloggd; same cover badges as list grids when enabled); resolve title + IGDB link from DOM. Skeletons while Steam/GS/scores load; rows paint progressively as each source returns; link favicons via Google s2. **Fix match** stores a per-slug Steam App ID override (`blp_steam_overrides`).
+4. **List/cover grids:** viewport-lazy badges on `.game-cover` (price / Steam review % / owned / wishlist / GameStatus; per-type toggles under Settings → Game card) with request concurrency limits; on the game page, the same badge pipeline targets Similar games covers instead.
 5. On **Steam** app pages: inject a SteamDB-style Backloggd button into `.apphub_OtherSiteInfo` (slug from Steam URL or title).
 6. On **SteamDB** app pages: inject a `.btn` into `nav.app-links` (prefer IGDB slug from the page); harvest Franchise / Systems / Technologies / Last Record Update from the live info table into the GM lookup cache for Backloggd.
 7. Steam enrichment: optional override App ID, else parallel `storesearch` (session + guest) → merge items → pick best app with strict title scoring (exact / edition-suffix only; reject prefix spin-offs like Minecraft→Dungeons; no first-result fallback) → `appdetails` + `appreviews` + popular tags / platforms / purchase options / franchise (`IStoreBrowseService/GetItems` with `include_basic_info` + `tagdata/populartags`) via `GM_xmlhttpRequest` (`@connect store.steampowered.com`, `api.steampowered.com`). If both miss and region ≠ US, retry search with `cc=US` and note it on the Steam row. Ownership + wishlist via `dynamicstore/userdata` (`rgOwnedApps`, `rgWishlist`) using the browser Steam session (no API key).
@@ -94,6 +100,7 @@ When shipping a user-visible change:
 2. Run `npm run build` to regenerate `backloggd-plus.user.js` and `backloggd-plus.meta.js`.
 3. Add a Keep a Changelog entry in `CHANGELOG.md`.
 4. Update README version badge / docs if they mention the version or new behavior.
+5. If README user-facing copy changed, update `docs/platforms/greasyfork.md` and `docs/platforms/scriptcat.md` to match.
 
 Changing `SCRIPT_VERSION` (via `package.json`) also clears the lookup cache on next run (`blp_cache_script_version`).
 

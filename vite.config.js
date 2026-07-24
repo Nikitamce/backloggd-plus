@@ -69,6 +69,8 @@ export default defineConfig({
           'https://steamdb.info/app/*',
         ],
         connect: [
+          'www.backloggd.com',
+          'backloggd.com',
           'store.steampowered.com',
           'api.steampowered.com',
           'steamdb.info',
@@ -81,6 +83,7 @@ export default defineConfig({
           'protondb.com',
           'cdn.jsdelivr.net',
           'latest.currency-api.pages.dev',
+          'translate.googleapis.com',
         ],
         'run-at': 'document-idle',
         noframes: true,

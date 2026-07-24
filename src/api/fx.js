@@ -1,6 +1,7 @@
 /**
  * FX rates for approximate price conversion (not Steam regional dual pricing).
  * Source: fawazahmed0/currency-api (no key) via jsDelivr + Cloudflare Pages fallback.
+ * SteamDB is intentionally NOT used (Cloudflare / not an FX API).
  */
 import { getCached, setCached } from '../cache.js';
 import { gmRequest } from '../gm.js';
@@ -98,6 +99,7 @@ export function formatMoneyCompact(amount, currency) {
     num = zeroDecimal.has(cc) ? String(Math.round(amount)) : amount.toFixed(2);
   }
   const sym = CURRENCY_SYMBOLS[cc] || cc;
+  // Symbols that usually prefix vs suffix
   if (sym === '$' || sym === '€' || sym === '£' || sym === '¥' || sym === '₩') {
     return `${sym}${num}`;
   }
@@ -159,7 +161,7 @@ export async function getFxRate(fromCurrency, toCurrency) {
 
 /**
  * Convert Steam minor units (cents/tiyn) to compact target currency text.
- * @returns {Promise<string|null>}
+ * @returns {Promise<string|null>} e.g. "560 ₽"
  */
 export async function convertMinorToCompact(minor, fromCurrency, targetCurrency) {
   const from = normalizeCurrency(fromCurrency);
@@ -172,6 +174,7 @@ export async function convertMinorToCompact(minor, fromCurrency, targetCurrency)
 }
 
 /**
+ * Build "~ 560 ₽" from Steam price_overview + settings target (final price).
  * @returns {Promise<string|null>}
  */
 export async function formatConvertedApprox(price, targetCurrency) {

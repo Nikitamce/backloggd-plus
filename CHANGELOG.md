@@ -5,94 +5,171 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.7.72] - 2026-07-19
-
-### Fixed (GameStatus)
-
-- Card badge **Cracked on release** → **Взломана в день релиза** (more flexible match)
-- Strip long English disclaimers after **Hypervisor** / em dash on group chips (e.g. Denuvo Bypass warning)
-- Short RU chip: **Обход Denuvo Hypervisor**
-
-## [0.7.71] - 2026-07-19
-
-### Translator dictionary
-
-- Library filters: Apply Filters, Display, sort options (When Added, Last Played, …), cover modes
-- Lists: Create List / Folder, N Lists
-- Activity: Recent Activity, Filter Activities, Your/Friends/Inbound Activity, Backer Upgrade
-- Profile: Edit Profile; pagination Prev / Next
-- GameStatus: Cracked on release
-
-## [0.7.70] - 2026-07-19
-
-### Restored (price UX)
-
-- **FX conversion** from `feat/kz-region-price-convert`: `~ €2,6` / struck pre-discount convert next to Steam price
-- Settings → Game: **Show converted price** + target currency (EUR, RUB, …); Steam region list includes **KZ**
-- Sale layout: discount % · was/now ₸ · ends date · FX pair (as before the translator branch)
-
-## [0.7.69] - 2026-07-19
-
-### Fixed
-
-- **Steam price display**: site translator no longer rewrites price / `.blp-price*` nodes (could strike or flatten sale stack)
-- Skip currency-like text (₸ $ € ₽ …) and pure numbers in translator
-- Hardened price CSS so only `.blp-price__was` is line-through; current price stays green / normal
-
-## [0.7.68] - 2026-07-19
-
-### Fixed (translator)
-
-- Sidebar status labels no longer smash into one line (safe label targets only; no overflow:hidden)
-- Pink button: **Отметить** (was Запись)
-- Log editor strings: Review, Details, Create Log, spoilers, platform select, etc.
-
-## [0.7.67] - 2026-07-19
-
-### Fixed (translator)
-
-- **Log or review** smashed glyphs: short label **Запись**, clean single text node + CSS for translated buttons
-- **Stats for all versions** → short **Все версии** (better fit / split DOM)
-- Welcome-back tail, Latest news / Popular lists / Coming soon / Recently anticipated / Sleeper hits
-- setElementLabel keeps icons, rewrites label as one text node (no word smash)
-
-## [0.7.66] - 2026-07-19
-
-### Fixed (translator)
-
-- **Critical:** pattern replace passed RegExpMatchArray as one arg → `undefined лайков` (now spreads match groups)
-- Stats for all versions: element-level translation when text is split / has caret
-- Manage lists → short **Списки** (was wrapping and pushing the heart)
-- More strings: Log or review, More info on, journal Completed on…, home Welcome back / Profile Stats / Game Ratings / Quick Log, Recently trending, Popular reviews, See More
-- Auto-repair of leftover `undefined лайк…` in the DOM
-
-## [0.7.65] - 2026-07-19
-
-### Fixed / improved (translator)
-
-- Edit button: shorter label **Изменить** (full «Редактировать» broke the pink sidebar button)
-- Log or review again, Bundled, Favorite Games, profile stats (Games Played / Played in YEAR / Games Backloggd)
-- Recently Played / Reviewed, Open review, EXPAND, N Likes
-- Pattern: `View my '…' stats →` → `Моя статистика по «…» →`
-- Steam Deck **Verified** → **Проверено** (RU Plus i18n)
-
-## [0.7.64] - 2026-07-19
-
-### Fixed / improved (translator)
-
-- Localize English site dates (`Feb 27, 2026` → `ru-RU` short date) and discount end dates via interface locale
-- More chrome strings: Log Out, Like this game, Myself, Top Liked, Nothing here!, Personal Ratings, Earned Badges, Stats for all versions variants
-- Genres (Adventure / Puzzle / …) and Steam categories / tags (RU maps)
-- GameStatus readable status: `Cracked in N day(s)` → Russian
-- Steam Deck **Playable** / related RU labels in Plus i18n
-
-## [0.7.63] - 2026-07-19
+## [0.7.83] - 2026-07-24
 
 ### Added
 
-- **Site UI translator** (branch feature): optional translation of native Backloggd chrome (nav, log statuses, stats labels, related tabs, etc.) via dictionary + light patterns
-- Settings → General: **Translate Backloggd site UI** (default on; currently ships a full **Russian** pack; other locales fall back to English site chrome)
-- Skips Plus-managed nodes, long prose, and game titles
+- **Site UI dictionary translator** (`translateSiteUi`): RU pack for native Backloggd chrome (nav, statuses, filters, log editor) via `site-ui.js` + `site-translate.js`
+- Settings → General: toggle **Translate Backloggd site UI**
+- GameStatus RU labels (incl. Cracked on release) and short Hypervisor chip text
+- Merge of `main` 0.7.82 features with site translator branch (Google Translate for reviews/description + site dictionary)
+
+### Fixed
+
+- Protect Steam price / FX blocks from site-UI dictionary rewrites
+
+## [0.7.82] - 2026-07-22
+
+### Added
+
+- Settings → General: export / import preferences as JSON (fault-tolerant merge for missing, extra, or invalid fields; lookup cache not included)
+
+## [0.7.81] - 2026-07-22
+
+### Added
+
+- Settings → Cache: colored usage bar by category (game data, profiles, translations, currency, system) with per-category size and entry counts
+- Settings → Cache: toggles for what to store — game data, user mini-profiles, translations, FX rates (system library/tag map stays on; saving with a source off prunes its entries)
+
+### Changed
+
+- Cache duration hint clarifies that profiles / translations / FX keep their own TTLs when enabled
+
+## [0.7.80] - 2026-07-22
+
+### Fixed
+
+- Game page remounts paint Steam / scores / GameStatus / Proton / SteamDB / similar from lookup cache in the same tick (no full skeleton flash on revisit)
+- Steam GetItems is not re-fetched when `steamdb:media` is already cached; empty store assets are stored as a sentinel so later visits stay cache hits
+- Pending cache writes flush on `pagehide` / tab hide; LRU access times persist with a short throttle
+
+## [0.7.79] - 2026-07-22
+
+### Added
+
+- Spinner on page avatars while a mini-profile loads (starts on hover/preload, stays until fetch finishes even if the pointer leaves; same accent ring as Translate)
+
+## [0.7.78] - 2026-07-22
+
+### Changed
+
+- Settings → UI **Hide Fuse ad slots**: also hides game-page incontent / review Fuse rows (not only homepage)
+- Auto-translate reviews no longer expands collapsed review bodies (manual Translate still does)
+
+### Fixed
+
+- Hide Fuse no longer collapses the whole `#game-profile` layout (only dedicated ad rows)
+
+## [0.7.77] - 2026-07-22
+
+### Added
+
+- Settings → **Profile**: dedicated tab for mini-profile hover cards and profile-page chrome
+- Per-block toggles for profile page styling: header & avatar, tier chip, stats, navigation, favorites
+- Settings → Profile: **Preload in viewport** for mini-profiles (off by default; fetches when avatars enter view)
+
+### Changed
+
+- Settings tab label shortened to **Profile** (was “User profile”)
+- **User mini-profile cards** moved from General → Profile (hover cards only; profile-page styling is separate)
+
+## [0.7.76] - 2026-07-22
+
+### Changed
+
+- Docs: split development and contributor guides into `DEVELOPMENT.md` and `CONTRIBUTING.md`; slimmed down `README.md`
+
+## [0.7.75] - 2026-07-22
+
+### Added
+
+- Settings → Translation: **Auto-translate reviews** when a card enters the viewport (off by default)
+
+## [0.7.74] - 2026-07-22
+
+### Added
+
+- Settings → **Translation**: Google Translate for game descriptions and reviews (target language, replace or below-original display; on by default)
+- Review translation card in “below original” mode with fade-in; auto-expand collapsed reviews on Translate
+
+## [0.7.73] - 2026-07-20
+
+### Added
+
+- Profile favorites showcase: tier frames, rank chips, hover lift; Favorite Games title accent
+- Profile nav restyled as a tier-tinted pill bar (active tab uses tier gradient)
+
+### Fixed
+
+- Profile avatar no longer collapses (preserve Backloggd `padding-bottom` sizing)
+
+## [0.7.72] - 2026-07-20
+
+### Added
+
+- Profile page tier chrome: header wash, avatar frame, tier chip with progress to next rank, tinted stats and nav accent (same Games Played tiers as mini-profile cards)
+
+## [0.7.71] - 2026-07-20
+
+### Added
+
+- Hover mini-profile cards on user avatars (reviews, lists, activity): stats, rating bars, favorites, recent games, badges
+- Card tiers by Games Played: Rookie → Bronze (25+) → Silver (50+) → Gold (100+) → Platinum (200+) → Diamond (300+) → Master (500+) → Legend (1000+)
+- Settings → UI toggle **User mini-profile cards** (on by default)
+
+## [0.7.70] - 2026-07-20
+
+### Added
+
+- Quick links: **GamesLike** (`gameslike.co/app/{steamAppId}/…`) when a Steam App ID is resolved; toggle under Settings → Links
+
+## [0.7.69] - 2026-07-20
+
+### Added
+
+- Settings → About tab: script description, GitHub repository link, and author card (avatar, name, email)
+
+## [0.7.68] - 2026-07-20
+
+### Added
+
+- Settings → Cache: fill percentage on the Cache tab badge and a prominent percent in the usage card (tone shifts at 70% / 90%)
+
+## [0.7.67] - 2026-07-18
+
+### Added
+
+- Settings → UI: optional floating glass header for `#primary-nav` (off by default)
+
+## [0.7.66] - 2026-07-18
+
+### Added
+
+- Settings → UI tab with option to hide Fuse / incontent homepage ad slots (off by default)
+
+### Changed
+
+- Settings panel: grouped lists, switch toggles, sliding tab indicator, and open/close animations
+- Toasts appear at the top-right
+- Settings dialog is larger (≈2× width / max height)
+
+## [0.7.65] - 2026-07-18
+
+### Fixed
+
+- Game ID no longer injects into the Avg Rating `h1` (only title section headings)
+
+## [0.7.64] - 2026-07-18
+
+### Changed
+
+- Toasts: title + body, type icon, dismiss button, and timed progress bar
+
+## [0.7.63] - 2026-07-18
+
+### Added
+
+- Optional Backloggd game ID after the title (Settings → Game; click copies the numeric ID)
 
 ## [0.7.62] - 2026-07-18
 

@@ -16,6 +16,7 @@ import {
   ENRICH_ATTR,
   FAVICON_URL,
   GAMESTATUS_SITE_BASE,
+  GAMESLIKE_SITE,
   GOGDB_SITE,
   ITAD_SITE,
   PCGW_SITE,
@@ -29,8 +30,9 @@ import { isLinkEnabled } from '../settings.js';
 import { locale, settings, t } from '../state.js';
 import { escapeAttr, escapeHtml } from '../utils/html.js';
 import { formatLocaleDate } from '../utils/locale-date.js';
-import { metacriticGameUrl } from '../utils/slug.js';
+import { metacriticGameUrl, slugifyForBackloggd } from '../utils/slug.js';
 import { bindGameCoverViewer, unbindGameCoverViewer } from './gallery.js';
+import { peekGamePageCache } from './hydrate-game-cache.js';
 import { applySimilarGames, ensureSimilarMount, removeSimilarGamesUi } from './similar.js';
 import {
   applyGameStatsVisibility,
@@ -40,6 +42,7 @@ import {
   removeSteamDbUi,
 } from './steamdb-ui.js';
 import { syncExportButton, removeExportUi } from './export-game.js';
+import { removeGameIdUi, syncGameIdUi } from './game-id.js';
 import { ensureUnifiedRatingWidget, updateUnifiedRatingWidget } from './unified-rating.js';
 import { getIgdbUrl, getPageContext, getGameTitle } from './page.js';
 import { cacheSourceLabel, paintDebugCacheMark } from './debug-cache.js';
@@ -338,6 +341,7 @@ export function appendFxPlaceholder(priceHtml, steam) {
   const initialAttr = onSale
     ? ` data-blp-fx-initial="${escapeAttr(String(steam.price.initial))}"`
     : '';
+  // Inline: ~ current  [smaller strikethrough ~ was] when on sale.
   const marker = `<span class="blp-price__fx" data-blp-fx data-blp-fx-from="${escapeAttr(from)}" data-blp-fx-final="${escapeAttr(String(steam.price.final))}" data-blp-fx-to="${escapeAttr(to)}"${initialAttr} hidden></span>`;
   if (priceHtml.includes('</a>')) {
     return priceHtml.replace('</a>', ` ${marker}</a>`);
@@ -391,13 +395,15 @@ export async function hydratePriceConversions(root = document) {
           final,
           initial: Number.isFinite(initial) ? initial : undefined,
           currency: from,
-          discount_percent: Number.isFinite(initial) && initial > final ? 1 : 0,
+          discount_percent:
+            Number.isFinite(initial) && initial > final ? 1 : 0,
         },
         to
       );
       if (!pair?.now) return;
 
       if (pair.was) {
+        // Single line: ~ current  then smaller strikethrough ~ original (no discount).
         el.innerHTML = `<span class="blp-price__fx-now">~ ${escapeHtml(pair.now)}</span><span class="blp-price__fx-was">~ ${escapeHtml(pair.was)}</span>`;
       } else {
         el.textContent = `~ ${pair.now}`;
@@ -479,6 +485,20 @@ export function buildExternalLinks({ title, slug, igdbUrl, steam }) {
       url: `${GOGDB_SITE}/?q=${q}`,
     });
   }
+  if (steam?.appId) {
+    const glSlug =
+      slugifyForBackloggd(steam.name || title) ||
+      String(slug || '')
+        .replace(/^\/+|\/+$/g, '')
+        .replace(/--\d+$/i, '');
+    links.push({
+      key: 'gameslike',
+      label: t.linkGameslike,
+      url: glSlug
+        ? `${GAMESLIKE_SITE}/app/${steam.appId}/${glSlug}`
+        : `${GAMESLIKE_SITE}/app/${steam.appId}`,
+    });
+  }
   return links.filter((l) => isLinkEnabled(l.key, settings));
 }
 
@@ -487,6 +507,7 @@ export function removeEnrichment() {
   document.querySelectorAll('[data-blp-debug]').forEach((el) => el.remove());
   removeSteamDbUi();
   removeExportUi({ includeLogEditor: false });
+  removeGameIdUi();
   removeSimilarGamesUi();
   unbindGameCoverViewer();
   clearGameStatsVisibility();
@@ -1176,9 +1197,12 @@ export async function enrichGamePage() {
   }
 
   const title = getGameTitle();
-  if (!title) return;
+  if (!title) {
+    syncGameIdUi();
+    return;
+  }
 
-  const token = `${ctx.slug}|${title}|${settings.steamCountry}|${settings.showSteam}|${settings.showSteamOwned}|${settings.showSteamWishlist}|${settings.showSteamTags}|${settings.showSteamCategories}|${settings.showMetacritic}|${settings.showOpenCritic}|${settings.showHltb}|${settings.showDeckProton}|${settings.showGameStatus}|${settings.showLinks}|${settings.showSteamDbIcon}|${settings.showSteamDbCover}|${settings.showSteamDbGallery}|${settings.showSteamDbDetails}|${settings.showSimilarGames}|${settings.showGameStats}|${settings.showSteamPlayers}|${settings.showExport}|${getSteamOverride(ctx.slug) || ''}|${settings.debugMode}|${JSON.stringify(settings.links)}`;
+  const token = `${ctx.slug}|${title}|${settings.steamCountry}|${settings.showSteam}|${settings.showSteamOwned}|${settings.showSteamWishlist}|${settings.showSteamTags}|${settings.showSteamCategories}|${settings.showMetacritic}|${settings.showOpenCritic}|${settings.showHltb}|${settings.showDeckProton}|${settings.showGameStatus}|${settings.showLinks}|${settings.showSteamDbIcon}|${settings.showSteamDbCover}|${settings.showSteamDbGallery}|${settings.showSteamDbDetails}|${settings.showSimilarGames}|${settings.showGameStats}|${settings.showSteamPlayers}|${settings.showExport}|${settings.showGameId}|${getSteamOverride(ctx.slug) || ''}|${settings.debugMode}|${JSON.stringify(settings.links)}`;
   const marker = document.querySelector(`[${ENRICH_ATTR}]`);
   // Same page/settings: keep the in-flight (or finished) mount. Remounting while
   // skeletons remain caused OpenCritic/HLTB/etc. to flicker on every MutationObserver pass.
@@ -1187,10 +1211,12 @@ export async function enrichGamePage() {
     applyGameStatsVisibility();
     bindGameCoverViewer();
     syncExportButton(token);
+    syncGameIdUi();
     return;
   }
 
   removeEnrichment();
+  syncGameIdUi();
   const rows = ensureEnrichmentRows();
   if (!rows) return;
 
@@ -1211,9 +1237,6 @@ export async function enrichGamePage() {
     settings.showSteamDbDetails !== false;
   const needSteamDbMedia =
     settings.showSteamDbIcon || settings.showSteamDbCover || settings.showSteamDbGallery;
-  if (needSteamDbMedia) mountSteamDbSkeletons(token);
-  else syncExportButton(token);
-  if (settings.showSimilarGames) ensureSimilarMount(token);
   const needSteam =
     settings.showSteam ||
     settings.showMetacritic ||
@@ -1222,20 +1245,33 @@ export async function enrichGamePage() {
     needSteamDb ||
     settings.showSimilarGames ||
     settings.showSteamDbDetails !== false ||
-    (settings.showLinks && (settings.links?.itad !== false || settings.links?.steamdb !== false));
+    (settings.showLinks &&
+      (settings.links?.itad !== false ||
+        settings.links?.steamdb !== false ||
+        settings.links?.gameslike !== false));
   const needUserdata =
     settings.showSteam && (settings.showSteamOwned || settings.showSteamWishlist);
 
+  // Sync hydrate before any await so remounts paint from cache without a skeleton flash.
+  const cachedPage = peekGamePageCache({
+    title,
+    slug: ctx.slug,
+    country: settings.steamCountry || 'US',
+  });
+  if (needSteamDbMedia) mountSteamDbSkeletons(token);
+  else syncExportButton(token);
+  if (settings.showSimilarGames) ensureSimilarMount(token);
+
   const state = {
-    steam: null,
+    steam: cachedPage.steam || null,
     owned: false,
     wishlist: false,
-    userdata: null,
-    gamestatus: null,
-    steamDb: null,
-    opencritic: null,
-    hltb: null,
-    proton: null,
+    userdata: cachedPage.userdata || null,
+    gamestatus: cachedPage.gamestatus || null,
+    steamDb: cachedPage.steamDb || null,
+    opencritic: cachedPage.opencritic || null,
+    hltb: cachedPage.hltb || null,
+    proton: cachedPage.proton || null,
     error: false,
   };
 
@@ -1379,8 +1415,20 @@ export async function enrichGamePage() {
     updateUnifiedRatingWidget(state);
   };
 
-  // Links that don't depend on Steam can appear immediately.
-  paintLinks(null);
+  // Links that don't depend on Steam can appear immediately; cache hits paint in the same tick.
+  paintLinks(state.steam);
+  if (state.steam) paintSteamBlock();
+  if (state.opencritic) paintOpenCritic();
+  if (state.hltb) paintHltb();
+  if (state.steam || state.proton) paintDeckProton();
+  if (state.gamestatus) paintGameStatus();
+  if (state.steamDb) {
+    applySteamDbUi(state.steamDb, token);
+    paintSteamDbDetails();
+  }
+  if (cachedPage.similar && state.steam?.appId != null) {
+    applySimilarGames(cachedPage.similar, state.steam.appId, token, { final: true });
+  }
 
   let dependentsStarted = false;
   let dependentsPromise = Promise.resolve();
@@ -1501,6 +1549,8 @@ export async function enrichGamePage() {
 
     dependentsPromise = Promise.all(jobs);
   };
+
+  if (state.steam?.found) startDependents(state.steam);
 
   try {
     const scoreJobs = [];
