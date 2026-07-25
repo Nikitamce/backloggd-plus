@@ -490,6 +490,23 @@ export const SITE_UI = {
       "View your account's status": 'Статус аккаунта',
       'View your account\'s status': 'Статус аккаунта',
 
+      // —— Settings → Archive ——
+      'Archived Logs': 'Архив записей',
+      'Merge Conflicts': 'Конфликты слияния',
+      'Lost Logs': 'Потерянные записи',
+      'No merge conflict logs at this time': 'Конфликтов слияния пока нет',
+      'No lost logs at this time': 'Потерянных записей пока нет',
+      'By default your content for the merged game is archived and hidden from the rest of the site.':
+        'По умолчанию контент для объединённой игры архивируется и скрыт от остального сайта.',
+
+      // —— Settings → Infractions ——
+      'Account Restrictions': 'Ограничения аккаунта',
+      'Content Removals': 'Удалённый контент',
+      'Hidden Ratings': 'Скрытые оценки',
+      'You have had no restrictions on your account': 'На аккаунте не было ограничений',
+      'You have no removed content': 'Удалённого контента нет',
+      'You have no ratings being hidden': 'Скрытых оценок нет',
+
       // —— Settings → Profile ——
       'You may change your username once every 30 days':
         'Имя пользователя можно менять раз в 30 дней',
@@ -662,6 +679,16 @@ export const SITE_UI = {
         re: /^Connect your GuessThe\.Game account by going to settings[\s\S]*$/i,
         replace:
           'Подключите GuessThe.Game: откройте настройки на guessthe.game, скопируйте UUID внизу и сохраните здесь — виджет статистики и ежедневная активность угадывания.',
+      },
+      {
+        re: /^Merge conflicts appear when two games have been merged[\s\S]*$/i,
+        replace:
+          'Конфликты слияния появляются, когда две игры объединили, а у вас были записи по обеим. Логи, рецензии и сессии переносятся на новую игру автоматически. Нужно выбрать, какие записи в библиотеке, статусы и время прохождения оставить.',
+      },
+      {
+        re: /^Lost logs are games you have logged without it marked as either played[\s\S]*$/i,
+        replace:
+          'Потерянные записи — игры, которые вы отметили, но без статуса «пройдено», «играю», «бэклог» или «вишлист».',
       },
       {
         re: /^Badge\s+BACKER\s+next to your username$/i,
