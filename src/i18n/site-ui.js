@@ -467,8 +467,222 @@ export const SITE_UI = {
       Unpin: 'Открепить',
       Hide: 'Скрыть',
       Show: 'Показать',
+
+      // —— Settings (/settings) sidebar ——
+      Defaults: 'По умолчанию',
+      'Set your defaults across the site': 'Значения по умолчанию на всём сайте',
+      'Customize your avatar and profile': 'Аватар и профиль',
+      'Customize how you\'re notified': 'Как приходят уведомления',
+      "Customize how you're notified": 'Как приходят уведомления',
+      Backer: 'Backer',
+      'Connect your Patreon account': 'Подключить аккаунт Patreon',
+      Data: 'Данные',
+      'Manage your Backloggd data': 'Управление данными Backloggd',
+      Account: 'Аккаунт',
+      'Update your email / password': 'Email и пароль',
+      Integrations: 'Интеграции',
+      'Hook into external sites / apps': 'Внешние сайты и приложения',
+      Archive: 'Архив',
+      'Cleanup lost game logs': 'Очистка потерянных записей',
+      'Blocked Users': 'Заблокированные',
+      'Manage blocked users': 'Управление блокировками',
+      Infractions: 'Нарушения',
+      "View your account's status": 'Статус аккаунта',
+      'View your account\'s status': 'Статус аккаунта',
+
+      // —— Settings → Profile ——
+      'You may change your username once every 30 days':
+        'Имя пользователя можно менять раз в 30 дней',
+      Change: 'Изменить',
+      Biography: 'Биография',
+      'Write a bio': 'Напишите о себе',
+      'Social links': 'Соцсети',
+      'Choose a social link': 'Выберите соцсеть',
+      'Reorder your favorites by dragging the covers':
+        'Перетащите обложки, чтобы изменить порядок избранного',
+      Features: 'Функции',
+      'Custom Covers': 'Свои обложки',
+      'Choose which custom covers to display throughout the site':
+        'Какие пользовательские обложки показывать на сайте',
+      'Default: Any cover': 'По умолчанию: любые обложки',
+      'Any cover': 'Любые обложки',
+      'Любые обложки': 'Любые обложки',
+      'Prefer yours': 'Предпочитать ваши',
+      'No custom covers': 'Без своих обложек',
+      'Home Widgets': 'Виджеты на главной',
+      'Display widgets at the top of your home page':
+        'Виджеты вверху главной страницы',
+      Enable: 'Включить',
+      Disable: 'Выключить',
+      'Higher Contrast': 'Больше контраста',
+      'Pink coloring is displayed lighter': 'Розовый цвет отображается светлее',
+      'Display Playtimes': 'Показывать время игры',
+      "Show average playtimes on a game's page":
+        'Среднее время прохождения на странице игры',
+      'Show average playtimes on a game\'s page':
+        'Среднее время прохождения на странице игры',
+      'Always show': 'Всегда показывать',
+      'Show after played': 'После «Пройдено»',
+      'Hide behind toggle': 'Скрыть за переключателем',
+      'Content filtering': 'Фильтр контента',
+      'Display erotic adult games': 'Показывать эротические/взрослые игры',
+      'Backloggd will never serve explicit content directly.':
+        'Backloggd никогда не показывает explicit-контент напрямую.',
+      'Search and browse': 'Поиск и просмотр',
+      'Discovery Engine': 'Рекомендации',
+      'Save changes': 'Сохранить',
+      'Save Changes': 'Сохранить',
+
+      // —— Settings → Defaults ——
+      'Your Profile': 'Ваш профиль',
+      'Played sort': 'Сортировка «Пройдено»',
+      'Playing sort': 'Сортировка «Играю»',
+      'Backlog sort': 'Сортировка бэклога',
+      'Wishlist sort': 'Сортировка вишлиста',
+      'Game likes sort': 'Сортировка лайков игр',
+      'Lists sort': 'Сортировка списков',
+      'GOTY Lists sort': 'Сортировка списков GOTY',
+      'Journal view': 'Вид журнала',
+      'When Liked': 'Когда лайкнуто',
+      'When liked': 'Когда лайкнуто',
+      'All sessions': 'Все сессии',
+      'Browse sort': 'Сортировка обзора',
+      'Game page sort': 'Сортировка на странице игры',
+      'Default: Latest': 'По умолчанию: новые',
+      Latest: 'Новые',
+      'Log Editor': 'Редактор записи',
+      'Played status': 'Статус «Пройдено»',
+      'Behavior upon first play session': 'При первой игровой сессии',
+      'Do nothing': 'Ничего не делать',
+      'Playtime sync setting': 'Синхронизация времени игры',
+      "Don't sync": 'Не синхронизировать',
+      'Don\'t sync': 'Не синхронизировать',
+      'Privacy Settings': 'Приватность',
+      'Journal note privacy': 'Приватность заметок журнала',
+      'Review / list comment privacy': 'Приватность комментариев к рецензиям и спискам',
+      'Anyone can view': 'Все могут смотреть',
+      'Anyone can comment': 'Все могут комментировать',
+      'Only friends can view': 'Только друзья',
+      'Only I can view': 'Только я',
+      'Default privacy': 'Приватность по умолчанию',
+      ASC: 'ASC',
+      DESC: 'DESC',
+
+      // —— Settings → Notifications ——
+      'Who can mention you in a comment': 'Кто может упоминать вас в комментариях',
+      'Who can send a like notification for reviews':
+        'Кто шлёт уведомления о лайках рецензий',
+      'Who can send a like notification for lists':
+        'Кто шлёт уведомления о лайках списков',
+      'Default: Anyone': 'По умолчанию: все',
+      Anyone: 'Все',
+      'Only friends': 'Только друзья',
+      Nobody: 'Никто',
+
+      // —— Settings → Backer / Patreon ——
+      'Backer Perks': 'Привилегии Backer',
+      'Connect an active Patreon account to receive your in-site perks.':
+        'Подключите активный Patreon, чтобы получать привилегии на сайте.',
+      'Connect Patreon account': 'Подключить Patreon',
+      'Not on Patreon? Check out all these cool perks you can get by signing up!':
+        'Ещё не на Patreon? Вот привилегии, которые можно получить:',
+      'Unlimited game logging': 'Неограниченные записи игр',
+      'Unlimited list creation': 'Неограниченные списки',
+      'Unlimited reviews': 'Неограниченные рецензии',
+      'Unlimited journal tracking': 'Неограниченный журнал',
+      '14-days of recent activity': '14 дней недавней активности',
+      'Continuous access to new features / updates':
+        'Постоянный доступ к новым функциям и обновлениям',
+      'Personalized all-time stats page': 'Персональная страница статистики за всё время',
+      'Yearly detailed stats recap': 'Годовой подробный отчёт статистики',
+      'Ad-free experience': 'Без рекламы',
+      'Home page widget customization': 'Настройка виджетов главной',
+      '60-days of recent activity': '60 дней недавней активности',
+      'First-look previews through Patreon': 'Превью новинок через Patreon',
+      'Early beta feature access': 'Ранний доступ к бета-функциям',
+      'Exclusive Discord channel / role': 'Закрытый канал / роль в Discord',
+      'With more being added!': 'И это ещё не всё!',
+      '$3 / month via Patreon': '$3 / месяц через Patreon',
+
+      // —— Settings → Data ——
+      'Data Management': 'Управление данными',
+      'Manage your logging data.': 'Управление данными записей.',
+      'Reset journal note privacy': 'Сбросить приватность заметок журнала',
+      'Override and reset all journal note privacies to a single privacy setting.':
+        'Сбросить приватность всех заметок журнала к одному значению.',
+      'Remove all tags': 'Удалить все теги',
+      'Remove all tags from every journal play session.':
+        'Удалить теги со всех игровых сессий журнала.',
+      'Remove all ratings': 'Удалить все оценки',
+      'Reset all ratings on every log you have.':
+        'Сбросить оценки со всех ваших записей.',
+      'Remove ratings': 'Удалить оценки',
+      'Delete All Logs': 'Удалить все записи',
+      'Delete all logs': 'Удалить все записи',
+
+      // —— Settings → Account ——
+      'New Password': 'Новый пароль',
+      "Leave blank if you don't want to change it":
+        'Оставьте пустым, если не хотите менять',
+      'Leave blank if you don\'t want to change it':
+        'Оставьте пустым, если не хотите менять',
+      'Confirm New Password': 'Подтвердите новый пароль',
+      'Current Password': 'Текущий пароль',
+      'Deactivate Account': 'Деактивировать аккаунт',
+      'Deactivate account': 'Деактивировать аккаунт',
+      'Permanently Delete Account': 'Удалить аккаунт навсегда',
+      'Permanently delete account': 'Удалить аккаунт навсегда',
+
+      // —— Settings → Integrations ——
+      'User UUID': 'UUID пользователя',
+      'Visit https://guessthe.game for your UUID':
+        'UUID: https://guessthe.game (внизу настроек)',
+      'Create activity upon win or loss': 'Активность при победе или поражении',
+      'Exclusive GuessThe.Game stats widget': 'Виджет статистики GuessThe.Game',
+      'Automatic daily guess activity': 'Ежедневная активность угадывания',
     },
     patterns: [
+      // Settings — long help / legal paragraphs (site walker length-caps)
+      {
+        re: /^Delete all your logs but retain your account to start fresh[\s\S]*$/i,
+        replace:
+          'Удалит все записи, но сохранит аккаунт. Пропадут логи, журнал, библиотека и рецензии. Останутся бейджи, имя, списки, друзья и лайки. Действие необратимо.',
+      },
+      {
+        re: /^This will lock your account, log you out[\s\S]*$/i,
+        replace:
+          'Аккаунт будет заблокирован, вы выйдете из системы, активность исчезнет, профиль станет невидимым. Имя может стать доступным другим. Восстановление — по ссылке реактивации или через поддержку.',
+      },
+      {
+        re: /^This will remove your account with all of its associated data[\s\S]*$/i,
+        replace:
+          'Аккаунт и все связанные данные будут удалены из базы навсегда. После удаления восстановление невозможно.',
+      },
+      {
+        re: /^Connect your GuessThe\.Game account by going to settings[\s\S]*$/i,
+        replace:
+          'Подключите GuessThe.Game: откройте настройки на guessthe.game, скопируйте UUID внизу и сохраните здесь — виджет статистики и ежедневная активность угадывания.',
+      },
+      {
+        re: /^Badge\s+BACKER\s+next to your username$/i,
+        replace: 'Бейдж BACKER рядом с именем',
+      },
+      {
+        re: /^Вид\s+BACKER\s+next to your username$/i,
+        replace: 'Бейдж BACKER рядом с именем',
+      },
+      {
+        re: /^Default:\s*(.+)$/i,
+        replace: (m, rest) => {
+          const map = {
+            'Any cover': 'Любые обложки',
+            Latest: 'Новые',
+            Anyone: 'Все',
+          };
+          const r = String(rest || '').trim();
+          return `По умолчанию: ${map[r] || r}`;
+        },
+      },
       // "16h average" / "16 h average"
       {
         re: /^(\d+(?:[.,]\d+)?)\s*h\s+average$/i,

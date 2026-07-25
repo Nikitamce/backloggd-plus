@@ -1,6 +1,5 @@
 {
   "name": "backloggd-plus",
-  "version": "0.7.83",
   "private": true,
   "type": "module",
   "description": "Userscript that extends Backloggd with extra game information, richer UI, and QoL features",
@@ -28,5 +27,6 @@
     "terser": "^5.49.0",
     "vite": "^6.0.0",
     "vite-plugin-monkey": "^5.0.0"
-  }
+  },
+  "version": "0.7.87"
 }

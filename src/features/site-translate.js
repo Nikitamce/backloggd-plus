@@ -271,7 +271,8 @@ function walkText(root, pack) {
       if (isBlpManagedElement(parent)) return NodeFilter.FILTER_REJECT;
       const raw = node.nodeValue;
       if (!raw || !normalizeKey(raw)) return NodeFilter.FILTER_REJECT;
-      if (normalizeKey(raw).length > 200) return NodeFilter.FILTER_REJECT;
+      // Settings help blurb can be long; cap high enough for account/data copy
+      if (normalizeKey(raw).length > 480) return NodeFilter.FILTER_REJECT;
       return NodeFilter.FILTER_ACCEPT;
     },
   });
@@ -313,7 +314,7 @@ function walkSimpleElements(root, pack) {
     if (!isSafeLabelTarget(el)) continue;
 
     const full = normalizeKey(el.textContent);
-    if (!full || full.length > 120) continue;
+    if (!full || full.length > 200) continue;
 
     // Skip concatenated multi-status strings (smashed parent)
     if (looksLikeMergedStatuses(full)) continue;
