@@ -5,35 +5,18 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-<<<<<<< HEAD
-=======
+## [0.7.88] - 2026-07-24
+
+### Added
+
+- Site UI RU: settings **Archive** (merge conflicts / lost logs), **Blocked Users**, **Infractions**
+
 ## [0.7.87] - 2026-07-24
 
 ### Added
 
 - Site UI RU: Backloggd **Settings** pages (Profile, Defaults, Notifications, Backer, Data, Account, Integrations) — sidebar labels, dropdowns, privacy options, Patreon copy
 
-## [0.7.86] - 2026-07-24
-
-### Fixed
-
-- Price chart no longer falls back to **USD** Games Popularity for non-US regions (was showing dollars for KZ)
-- Strict currency match (KZT/RUB/…) from SteamDB API + package id; reject wrong-currency series
-- Chart lag: fewer points, rAF hover, no max-height animation, lighter tooltip
-
-## [0.7.85] - 2026-07-24
-
-### Changed
-
-- Price chart: SteamDB-style full graph for the **selected Steam store region** (title `Price history (KZ)`, zoom 6m/1y/max, step final price, 2-year low, navigator, hover tooltip). Loads SteamDB GetPriceHistory by country/currency first.
-
-## [0.7.84] - 2026-07-24
-
-### Added
-
-- Steam price **Chart** button next to the store price; expands a price-history graph under the Steam row (layout below shifts down). Tries SteamDB page data first, then free Games Popularity history snapshots. Toggle in Settings → Game.
-
->>>>>>> 825c3ee (i18n(ru): Backloggd settings pages dictionary v0.7.87)
 ## [0.7.83] - 2026-07-24
 
 ### Added
