@@ -137,9 +137,27 @@ function createEngine(code, dict) {
       const next = countRepl(counted[1], counted[2]);
       if (next) return preserveEdges(raw, next);
     }
-    const ago = text.match(/^(\d+)\s+(minute|minutes|hour|hours|day|days|week|weeks|month|months|year|years)\s+ago$/);
-    if (ago) return preserveEdges(raw, `${ago[1]} ${plural(ago[1], unit[ago[2]])} назад`);
-    const month = text.match(/^(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s+(\d{1,2})(?:,\s+(\d{4}))?$/);
+    const shortAgo = {
+      min: 'minute', mins: 'minutes', hr: 'hour', hrs: 'hours',
+      sec: 'second', secs: 'seconds', mo: 'month', mos: 'months', yr: 'year', yrs: 'years',
+    };
+    const ago = text.match(/^(\d+)\s+([a-z]+)\s+ago$/i);
+    if (ago) {
+      const name = unit[ago[2].toLowerCase()] ? ago[2].toLowerCase() : shortAgo[ago[2].toLowerCase()];
+      if (name && unit[name]) return preserveEdges(raw, `${ago[1]} ${plural(ago[1], unit[name])} назад`);
+    }
+    const oneAgo = text.match(/^(?:an?|a)\s+(minute|hour|day|week|month|year)\s+ago$/i);
+    if (oneAgo) {
+      const name = oneAgo[1].toLowerCase();
+      const key = name === 'minute' ? 'minute' : name;
+      return preserveEdges(raw, `1 ${plural(1, unit[key] || unit[`${key}s`])} назад`);
+    }
+    if (/^just now$/i.test(text)) return preserveEdges(raw, 'только что');
+    const avg = text.match(/^Avg\s+([\d.]+)$/i);
+    if (avg) return preserveEdges(raw, `Ср. ${avg[1]}`);
+    const badgeEarned = text.match(/^You earned the (.+) badge\.?$/i);
+    if (badgeEarned) return preserveEdges(raw, `Получен значок «${badgeEarned[1]}»`);
+    const month = text.match(/^(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s+(\d{1,2})(?:,)?(?:\s+(\d{4}))?$/);
     if (month) return preserveEdges(raw, `${month[2]} ${months[month[1]]}${month[3] ? ` ${month[3]}` : ''}`);
     const monthLong = text.match(/^(January|February|March|April|May|June|July|August|September|October|November|December)\s+(\d{1,2}),\s+(\d{4})$/);
     if (monthLong) return preserveEdges(raw, `${monthLong[2]} ${monthsFull[monthLong[1]]} ${monthLong[3]}`);
@@ -385,6 +403,27 @@ function bindExpandFix() {
   }, true);
 }
 
+function fixTightButtons() {
+  document.querySelectorAll('a, button').forEach((el) => {
+    if (el.closest('.blp-settings, .blp-toast')) return;
+    const text = (el.innerText || '').replace(/\s+/g, ' ').trim();
+    if (!text) return;
+    const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT);
+    while (walker.nextNode()) {
+      if (/^your$/i.test((walker.currentNode.nodeValue || '').trim()) && /измен/i.test(text)) {
+        walker.currentNode.nodeValue = walker.currentNode.nodeValue.replace(/your/i, 'запись');
+      }
+    }
+    const next = (el.innerText || '').replace(/\s+/g, ' ').trim();
+    if (next.length < 16 && el.scrollWidth <= el.clientWidth + 1) return;
+    if (!/запис|реценз|измен|log or review/i.test(next)) return;
+    el.style.setProperty('white-space', 'normal', 'important');
+    el.style.setProperty('height', 'auto', 'important');
+    el.style.setProperty('line-height', '1.2', 'important');
+    el.style.setProperty('text-align', 'center', 'important');
+  });
+}
+
 function fixWelcomeWrap() {
   if (!document.body) return;
   const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_ELEMENT);
@@ -423,6 +462,7 @@ export function startSiteLocale() {
     engine.fixSplitOver(document.body);
     engine.translatePseudos(document.body);
     fixWelcomeWrap();
+    fixTightButtons();
   };
   const schedule = () => {
     if (scheduled) return;
