@@ -153,15 +153,23 @@ function createEngine(code, dict) {
       return preserveEdges(raw, `1 ${plural(1, unit[key] || unit[`${key}s`])} назад`);
     }
     if (/^just now$/i.test(text)) return preserveEdges(raw, 'только что');
+    const ratingShare = text.match(/^(.*?)Ratings\s*\(([\d.]+)%\)$/i);
+    if (ratingShare && text.length < 80) return preserveEdges(raw, `${ratingShare[1]}Оценки (${ratingShare[2]}%)`);
     const avg = text.match(/^Avg\s+([\d.]+)$/i);
     if (avg) return preserveEdges(raw, `Ср. ${avg[1]}`);
+    const collectionStats = text.match(/^View my ['"«“](.+)['"»”] stats$/i);
+    if (collectionStats) return preserveEdges(raw, `Статистика «${collectionStats[1]}»`);
+    const playedFor = text.match(/^(\d+)h(?:\s*(\d+)m)?$/i);
+    if (playedFor) return preserveEdges(raw, playedFor[2] ? `${playedFor[1]} ч ${playedFor[2]} мин` : `${playedFor[1]} ч`);
+    const span = text.match(/^(\d+)\s+(day|days|hour|hours|minute|minutes)$/i);
+    if (span) return preserveEdges(raw, `${span[1]} ${plural(span[1], unit[span[2].toLowerCase()])}`);
     const badgeEarned = text.match(/^You earned the (.+) badge\.?$/i);
     if (badgeEarned) return preserveEdges(raw, `Получен значок «${badgeEarned[1]}»`);
     const month = text.match(/^(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s+(\d{1,2})(?:,)?(?:\s+(\d{4}))?$/);
     if (month) return preserveEdges(raw, `${month[2]} ${months[month[1]]}${month[3] ? ` ${month[3]}` : ''}`);
     const monthLong = text.match(/^(January|February|March|April|May|June|July|August|September|October|November|December)\s+(\d{1,2}),\s+(\d{4})$/);
     if (monthLong) return preserveEdges(raw, `${monthLong[2]} ${monthsFull[monthLong[1]]} ${monthLong[3]}`);
-    const namedMonth = text.match(/^(January|February|March|April|May|June|July|August|September|October|November|December),\s+(\d{4})$/);
+    const namedMonth = text.match(/^(January|February|March|April|May|June|July|August|September|October|November|December),?\s+(\d{4})$/);
     if (namedMonth) {
       const names = { January: 'январь', February: 'февраль', March: 'март', April: 'апрель', May: 'май', June: 'июнь', July: 'июль', August: 'август', September: 'сентябрь', October: 'октябрь', November: 'ноябрь', December: 'декабрь' };
       return preserveEdges(raw, `${names[namedMonth[1]]} ${namedMonth[2]}`);
